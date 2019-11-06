@@ -1,0 +1,108 @@
+
+.blog-msg {
+    padding-left:15px;
+}
+.blog-msg li {
+    margin-top: -10px;
+    position: relative;
+}
+.notice-active::before {
+    position: absolute;
+    left: -13px;
+    top: 5px;
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: #ca0c16;
+    border-radius: 50%;
+}
+.comment {
+    padding-left:3px;
+    padding-top:3px;
+}
+.remove-msg {
+    float: right;
+    font-size: small;
+    margin-top:2px;
+    display:none;
+}
+    .remove-msg a {
+      
+        margin-right:10px;
+    }
+    .blog-msg li:hover .remove-msg {
+        display: block;
+    }
+ ul#bootstrappager {
+   float:right;
+   margin-bottom:10px;
+}
+
+ /*提示信息*/
+.module-yun-tip {
+    position: fixed;
+    padding: 0 15px;
+    background: #5bc0de;
+    border-radius: 4px;
+    color: #fff;
+    height: 40px;
+    font-family: "Microsoft YaHei",SimSun;
+    -webkit-box-shadow: 0 0 4px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 0 4px rgba(0,0,0,.2);
+    box-shadow: 0 0 4px rgba(0,0,0,.2);
+    z-index: 95;
+}
+
+    .module-yun-tip .tip-inner {
+        height: 100%;
+    }
+
+    .module-yun-tip .tip-icon.icon-tips-success {
+        line-height: 41px;
+        font-size: 13px;
+    }
+
+    .module-yun-tip .tip-icon {
+        display: inline-block;
+        _display: inline;
+        _zoom: 1;
+        width: 22px;
+        height: 45px;
+        margin: 0 1px 0 0;
+        padding-left: 1px;
+    }
+
+    .module-yun-tip .tip-msg, .module-yun-tip .tip-icon, .module-yun-tip .tip-vip-icon {
+        float: left;
+        display: block;
+    }
+
+.icon {
+    font-family: yunfont !important;
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.module-yun-tip .tip-msg {
+    display: block;
+    margin: 0 3px;
+    font-size: 13px;
+    line-height: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    max-width: 500px;
+    min-width: 1px;
+}
+
+.module-yun-tip .tip-msg, .module-yun-tip .tip-icon, .module-yun-tip .tip-vip-icon {
+    float: left;
+    display: block;
+}

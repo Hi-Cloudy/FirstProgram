@@ -1,0 +1,394 @@
+﻿@model DTRBlog.Models.Articley.ViewModel.SingleBlogTypeCollection
+@{
+    ViewBag.Title = "ArticleManage";
+}
+<br />
+<br />
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/Article/vue.min.js"></script>
+<script src="~/Scripts/Article/Element.js"></script>
+@section head{
+    <style>
+        .avatar-uploader .el-upload {
+            border: 1px dashed #d9d9d9;
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .avatar-uploader .el-upload:hover {
+                border-color: #409EFF;
+            }
+
+        .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 178px;
+            height: 178px;
+            line-height: 178px;
+            text-align: center;
+        }
+         .avatar-uploader-icon::before{
+             position:absolute;
+             top:-10px;
+             left:0;
+             right:0;
+         }
+
+        .avatar {
+            width: 178px;
+            height: 178px;
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="~/Content/Article/ArticlelManage.css" />
+    @*<link rel="stylesheet" href="~/Content/Article/ArticleWrite.css" />*@
+}
+
+<div class=" container">
+    <input type="hidden" value="@ViewData["BlogID"]" id="BlogID" />
+    <input type="hidden" value="@DTR.DATAConfig.DATAPathConfigs.DTRDataConfigNetWorkelPath" id="NetWorkelPath" />
+    <input type="hidden" value="@DTR.DATAConfig.DATAPathConfigs.WorksFace" id="WorksFace" />
+    <div id="Article">
+
+        <div id="left-Menu">
+            @Html.Partial("/Views/Articley/ArticlePart/_PartialArticelMenu.cshtml")
+        </div>
+
+        <div id="right-Ctrl">
+            <!--条件控制-->
+            <div id="condition">
+                <span class="first">条件:</span>
+                <span><input type="date" v-model="articleCondition.Time" /></span>
+                <span>
+                    类型：
+                    <select name="BlogTypeID" v-model="articleCondition.BlogTypeID">
+                        <option value="0" selected>不选择</option>
+                        @foreach (var i in Model.blogTypes)
+                        {
+                            <option value="@i.BlogTypeID">@i.BlogTypeName</option>
+                        }
+                    </select>
+                </span>
+                <span>
+                    个人博客类型：
+                    <select name="SingBlogTypeID" v-model="articleCondition.SingBlogTypeID">
+                        <option value="0" selected>不选择</option>
+                        @foreach (var i in Model.singTypes)
+                        {
+                            <option value="@i.SingleTypeID">@i.SingTypeName</option>
+                        }
+                    </select>
+                </span>
+
+                <span>
+                    标题：<input type="text" placeholder="标题关键字" v-model="articleCondition.Title" />
+                </span>
+                <span>
+                    <label for="UnPublic">未公开</label>&nbsp;&nbsp;
+                    <input type="checkbox" id="UnPublic" v-model="articleCondition.isNoPublic" />
+                </span>
+                <span>
+                    <button class="btn btn-primary" v-on:click="ClickQuery">搜索</button>
+                </span>
+            </div><!--条件控制-->
+            <script>
+                var querArticle = new Vue({
+                    el: "div#condition",
+                    data: {
+                        articleCondition: {
+                            Time: null,
+                            BlogTypeID: 0,
+                            SingBlogTypeID: 0,
+                            Title: null,
+                            BlogID: $("input#BlogID").val() ? $("input#BlogID").val() : "",
+                            isNoPublic: false,
+                        }
+                    },
+                    methods: {
+                        QuerArticle: function (success) {
+                            $.ajax({
+                                url: "/ArticleRequset/GetArticles",
+                                data: this.articleCondition,
+                                type: "POST",
+                                success: success,
+                                compelet: function (xhr) { },
+                            })
+                        },
+                        ClickQuery: function () {
+                            this.QuerArticle(function (data) {
+                                console.log(data);
+                                ArticleCtrl.ArticleList = data.Article
+                            });
+                        },
+                    }
+                });
+
+            </script>
+
+            <hr />
+            <!--列表-->
+            <div id="ArticleCtrl">
+                <div class="Article-item" align="right" v-for="(item,index) in ArticleList" :key="index">
+                    <p class="title" align="left"><b v-text="item.Title"></b></p>
+                    <p class="Introduc" align="left" v-text="item.Introduc"></p>
+                    <span v-text="formatterDate(item.PulishDate)"></span>&nbsp;&nbsp;
+                    <span>浏览量：{{item.BorwseCount}}</span>&nbsp;&nbsp;
+                    <span>评论量：{{item.CommentCouont}}</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                    <span><a v-on:click="clickUpdate(item.BlogWorksID)">修改</a></span>&nbsp;&nbsp;
+                    <span><a :href="'/@Session["BlogID"]/Article/'+item.BlogWorksID">查看</a></span>&nbsp;&nbsp;
+                    <span><a v-on:click="topArticle(item.BlogWorksID)">{{item.TopState?"已顶置":"顶置"}}</a></span>&nbsp;&nbsp;
+                    <span><a v-on:click="openArticle(item.BlogWorksID)">{{item.OpenState?"私密":"已私密"}}</a></span>&nbsp;&nbsp;
+                    <span><a v-on:click="clickDelete(item.BlogWorksID)">删除</a></span>
+                </div>
+            </div>
+
+            <script>
+                var ArticleCtrl = new Vue({
+                    el: "div#ArticleCtrl",
+                    data: {
+                        ArticleList: [],
+                    },
+                    methods: {
+                        findLocla: function (blogWorksID) {
+                            for (var i = 0; i < this.ArticleList.length; i++) {
+                                if (this.ArticleList[i].BlogWorksID == blogWorksID) {
+                                    return this.ArticleList[i];
+                                }
+                            }
+                            return null;
+                        },
+                        formatterDate: function (time) {
+                            var str = time.match("\\d+")[0]
+                            var data = new Date(parseInt(str));
+                            return data.toLocaleDateString() + " " + data.toLocaleTimeString();
+                        },
+                        clickDelete: function (blogWorksID) {//删除文件
+                            if (!confirm("是否继续删除，删除的数据将无法得到恢复。"))
+                                return;
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/DeleteWorks",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data, state, xhr) {
+                                    if (data.IsOk) {
+                                        that.deleteLocal(blogWorksID);
+                                        alert("已删除文件及其资源");
+                                        return null;
+                                    }
+                                    alert("删除失败");
+                                },
+                                compelet: function () { },
+                            });
+                        },
+                        deleteLocal: function (blogWorksID) {//移除本地
+                            for (var i = 0; i < this.ArticleList.length; i++) {
+                                if (this.ArticleList[i].BlogWorksID == blogWorksID) {
+                                    this.ArticleList.splice(i, 1);
+                                    return;
+                                }
+                            }
+                        },
+                        topArticle: function (blogWorksID) {//顶置
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/ChangTopState",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data, state, xhr) {
+                                    if (data.IsOk) {
+                                        querArticle.ClickQuery();
+                                        return;
+                                    }
+                                    alert("失败");
+                                },
+                                compelet: function () { },
+                            });
+                        },
+                        openArticle: function (blogWorksID) {//私密设置
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/ChangOpenState",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data, state, xhr) {
+                                    if (data.IsOk) {
+                                        that.deleteLocal(blogWorksID);
+                                        return;
+                                    }
+                                    alert("失败");
+                                },
+                                compelet: function () { },
+                            });
+                        },
+                        clickUpdate: function (blogWorksID) {
+                            ArticlUpdateDialog.intiInfo(this.findLocla(blogWorksID));
+                        },
+                    },
+                    created: function () {
+                        var that = this;
+                        querArticle.QuerArticle(function (data) {
+                            that.ArticleList = data.Article;
+                            console.log(data.Article);
+                        });
+                    }
+                });
+            </script>
+
+            <!--文章信息修改的模态框-->
+            <div id="ArticlUpdateDialog">
+                <el-dialog title="博客详情" :visible.sync="isShow" :close="closeHandler">
+                    <el-form ref="form" :model="articInfo" label-width="120px">
+                        <el-form-item label="封面">
+                            <el-upload class="avatar-uploader" :action="titleHeader.action" list-type="picture-card" :show-file-list="false"  :data="UpdataImg" :drag="true" :name="'titleImg'"
+                                       :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                                <img v-if="titleHeader.imageUrl" :src="titleHeader.imageUrl" class="avatar">
+                                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="博客名称">
+                            <el-input v-model="articInfo.Title" placeholder="请输入新的标题"></el-input>
+                        </el-form-item>
+                        <el-form-item label="博客类型">
+                            <el-select v-model="articInfo.BlogTypeID" placeholder="请选博客类型">
+                                @foreach (var i in Model.blogTypes)
+                                {
+                                    <el-option label="@i.BlogTypeName" :value="@i.BlogTypeID" :key="@i.BlogTypeID"></el-option>
+                                }
+                                <el-option label="不设置" :value="0" :key="0"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="个人博客类型">
+                            <el-select v-model="articInfo.SingleBlogTypeID" placeholder="请选择个人博客类型">
+                                @foreach (var i in Model.singTypes)
+                                {
+                                    <el-option label="@i.SingTypeName" :value="@i.SingleTypeID" :key="@i.SingleTypeID"></el-option>
+                                }
+                                <el-option label="不设置" :value="0" :key="0"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="博客摘要">
+                            <el-input type="textarea" placeholder="请输入内容" v-model="articInfo.Introduc"></el-input>
+                        </el-form-item>
+                    </el-form>
+
+                    <div slot="footer" class="dialog-footer">
+                        <el-button type="primary" v-on:click="okHandler">确 定</el-button>
+                        <el-button v-on:click="cancleHandler">取 消</el-button>
+                    </div>
+                </el-dialog>
+            </div>
+            <script>
+                var ArticlUpdateDialog = new Vue({
+                    el: "div#ArticlUpdateDialog",
+                    data: {
+                        isShow: false,
+                        articInfo: {
+                            BlogID: 0,
+                            BlogTypeID: 0,
+                            BlogWorksID: 0,
+                            Title: null,
+                            Introduc: null,
+                            SingleBlogTypeID: null,
+                            WorksPath: null,
+                        },
+                        locaArticInfo: null,
+                        isUpdate:false,//是否增在更新
+                        UpdataImg: {
+                            WorksPath: null,
+                        },
+                        titleHeader: {
+                            action: "/ArticleWrite/UpLoadTitleImg",
+                            imageUrl: null,
+                            netWorkPath: $("input#NetWorkelPath").val(),
+                            worksFace: $("input#WorksFace").val(),
+                        },
+                    },
+                    methods: {
+                        closeHandler: function () {
+                            console.log(this.articInfo);
+                        },
+                        intiInfo: function (artiInfo) {
+                            if (this.isUpdate) {
+                                this.$message({ message: "当前正在更新中. . . ", type: "error",duration:1000 });
+                                return;
+                            }
+                            this.articInfo.BlogID = artiInfo.BlogID;
+                            this.articInfo.BlogTypeID = artiInfo.BlogTypeID;
+                            this.articInfo.BlogWorksID = artiInfo.BlogWorksID;
+                            this.articInfo.Title = artiInfo.Title;
+                            this.articInfo.Introduc = artiInfo.Introduc;
+                            this.articInfo.SingleBlogTypeID = artiInfo.SingleBlogTypeID;
+                            this.articInfo.WorksPath = artiInfo.WorksPath;
+                            this.UpdataImg.WorksPath = this.articInfo.WorksPath;//设置路径，显示图片
+                            this.titleHeader.imageUrl = this.titleHeader.netWorkPath + this.articInfo.WorksPath + this.titleHeader.worksFace + "?a=" + Date.now();//防止缓存
+                            this.locaArticInfo = artiInfo;//缓存当前信息
+
+                            this.show();
+                        },
+                        setInfo: function () {
+                            this.locaArticInfo.Title = this.articInfo.Title;
+                            this.locaArticInfo.BlogTypeID = this.articInfo.BlogTypeID;
+                            this.locaArticInfo.Introduc = this.articInfo.Introduc;
+                            this.locaArticInfo.SingleBlogTypeID = this.articInfo.SingleBlogTypeID;
+                        },
+                        show: function () { this.isShow = true; },
+                        hide: function () { this.isShow = false; },
+                        cancleHandler: function () { this.hide(); },
+                        okHandler: function () {
+                            this.submiteUpd();
+                        },
+                        handleAvatarSuccess: function (res, file) {
+                            this.titleHeader.imageUrl = URL.createObjectURL(file.raw);
+                        },
+                        beforeAvatarUpload: function (file) {
+                            const isJPG = file.type === 'image/jpeg';
+                            const isLt2M = file.size / 1024 / 1024 < 2;
+
+                            if (!isJPG) {
+                                this.$message.error('上传头像图片只能是 JPG 格式!');
+                            }
+                            if (!isLt2M) {
+                                this.$message.error('上传头像图片大小不能超过 2MB!');
+                            }
+                            return isJPG && isLt2M;
+                        },
+                        submiteUpd: function () {
+                            var that = this;
+                            that.isUpdate = true;
+                            var msg = that.$message({ message: "正在修改信息 . . .", type: "info",duration:0 });
+                            $.ajax({
+                                url: "/ArticleRequset/UpdateArticle",
+                                type: "POST",
+                                data: this.articInfo,
+                                success: function (data) {
+                                    if (data.IsOk) {
+                                        that.setInfo();
+                                        msg.$message({ message: "修改成功", type: "success",duration:500 });//
+                                        return;
+                                    }
+                                    msg.close();
+                                },
+                                complete: function () {
+                                    that.isUpdate = false;
+                                    msg.close();
+                                }
+                            });
+                        },
+                    },
+                });
+            </script>
+        </div>
+
+
+
+    </div>
+</div>

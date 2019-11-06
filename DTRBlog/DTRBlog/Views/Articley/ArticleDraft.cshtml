@@ -1,0 +1,126 @@
+﻿
+@{
+    ViewBag.Title = "ArticleDraft";
+
+}
+
+@section head{
+    <link rel="stylesheet" href="~/Content/Article/ArticlelManage.css" />
+    <link rel="stylesheet" href="~/Content/Article/ArticleWrite.css" />
+}
+<br />
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/Article/vue.min.js"></script>
+<script src="~/Scripts/Article/Element.js"></script>
+<div class=" container">
+    <input type="hidden" value="@ViewData["BlogID"]" id="BlogID" />
+    <div id="Article">
+
+        <div id="left-Menu">
+            @Html.Partial("/Views/Articley/ArticlePart/_PartialArticelMenu.cshtml")
+        </div>
+
+        <div id="right-Ctrl">
+            <!--列表-->
+            <div id="ArticleCtrl">
+                <div class="Article-item" align="right" v-for="(item,index) in ArticleList" :key="index">
+                    <p class="title" align="left"><b>{{item.Title}}</b></p>
+                    <p class="Introduc" align="left" v-text="item.Introduc"></p>
+                    <span>{{formatDate(item.PulishDate)}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span><a :href="'/Articley/ArticleWrite?BlogID='+item.BlogID+'&BlogWorksID=' + item.BlogWorksID" target="_blank">编辑</a></span>&nbsp;&nbsp;
+                    <span><a v-on:click="publishArticle(item.BlogWorksID)">发布</a></span>&nbsp;&nbsp;
+                    <span><a v-on:click="clickDelete(item.BlogWorksID)">删除</a></span>
+                </div>
+            </div>
+
+            <script>
+                var ArticleCtrl = new Vue({
+                    el: "div#ArticleCtrl",
+                    data: {
+                        ArticleList: [],
+                    },
+                    methods: {
+                        formatDate: function (date) {
+                            var dateTime = new Date(parseInt(date.match("\\d+")[0]));
+                            return dateTime.toLocaleDateString() + " " + dateTime.toLocaleTimeString();
+                        },
+                        QuerArticle: function (success) {//查询
+                            $.ajax({
+                                url: "/ArticleRequset/GetArticlesDraft",
+                                data: {
+                                    BlogID: $("input#BlogID").val(),
+                                },
+                                type: "GET",
+                                success: success,
+                                compelet: function (xhr) { },
+                            })
+                        },
+                        ClickQuery: function () {
+                            this.QuerArticle(function (data) {
+                                ArticleCtrl.ArticleList = data.Article
+                            });
+                        },
+                        deleteLocal: function (blogWorksID) {//移除本地
+                            for (var i = 0; i < this.ArticleList.length; i++) {
+                                if (this.ArticleList[i].BlogWorksID == blogWorksID) {
+                                    this.ArticleList.splice(i, 1);
+                                    return;
+                                }
+                            }
+                        },
+                        clickDelete: function (blogWorksID) {//删除文件
+                            if (!confirm("是否继续删除，删除的数据将无法得到恢复。"))
+                                return;
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/DeleteWorks",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data, state, xhr) {
+                                    if (data.IsOk) {
+                                        that.deleteLocal(blogWorksID);
+                                        alert("已删除文件及其资源");
+                                        return null;
+                                    }
+                                    alert("删除失败");
+                                },
+                                compelet: function () { },
+                            });
+                        },
+                        publishArticle: function (blogWorksID) {//发布文章
+                            if (!confirm("确定发布此文章吗？"))
+                                return;
+
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/PublishArticle",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data) {
+                                    if (data.IsOk) {
+                                        alert("成功");
+                                        that.deleteLocal(blogWorksID);
+                                        return;
+                                    }
+                                    alert("发布失败");
+                                },
+                                compelet: function () { }
+                            });
+                        }
+                    },
+                    created: function () {
+                        this.QuerArticle(function (data) {
+                            ArticleCtrl.ArticleList = data.Article;
+                        });
+                    }
+                });
+
+            </script>
+        </div>
+
+    </div>
+    </div>

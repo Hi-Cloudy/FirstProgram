@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "ArticleWaitTest";
+}
+<br />
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/Article/vue.min.js"></script>
+<script src="~/Scripts/Article/Element.js"></script>
+@section head{
+    <link rel="stylesheet" href="~/Content/Article/ArticlelManage.css" />
+    <link rel="stylesheet" href="~/Content/Article/ArticleWrite.css" />
+}
+<div class=" container">
+    <input type="hidden" value="@ViewData["BlogID"]" id="BlogID" />
+    <div id="Article">
+
+        <div id="left-Menu">
+            @Html.Partial("/Views/Articley/ArticlePart/_PartialArticelMenu.cshtml")
+        </div>
+
+        <div id="right-Ctrl">
+            <!--列表-->
+            <div id="ArticleCtrl">
+                <div class="Article-item" align="right" v-for="(item,index) in ArticleList" :key="index">
+                    <p class="title" align="left"><b>{{item.Title}}</b></p>
+                    <span>
+                        <a :href="'/@Session["BlogID"]/Article/'+item.BlogWorksID">查看</a>
+                    </span>&nbsp;&nbsp;
+                    <span v-show="item.StateID == 4"><a v-on:click="clickDelete(item.BlogWorksID)">删除</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span :style="item.StateID == 4 ?Color:''">{{item.StateID == 2?"待审核":"未通过"}}</span>&nbsp;&nbsp;
+                    <span v-text="formatterDate(item.PulishDate)"></span>
+                </div>
+            </div>
+
+            <script>
+                var ArticleCtrl = new Vue({
+                    el: "div#ArticleCtrl",
+                    data: {
+                        ArticleList: [],
+                        Color: {
+                            color: "red",
+                        }
+                    },
+                    methods: {
+                        formatterDate: function (time) {
+                            var str = time.match("\\d+")[0]
+                            var data = new Date(parseInt(str));
+                            return data.toLocaleDateString() + " " + data.toLocaleTimeString();
+                        },
+                        QuerArticle: function (success) {//查询
+                            $.ajax({
+                                url: "/ArticleRequset/GetWaitArticel",
+                                data: {
+                                    BlogID: $("input#BlogID").val(),
+                                },
+                                type: "GET",
+                                success: success,
+                                compelet: function (xhr) { },
+                            })
+                        },
+                        ClickQuery: function () {
+                            this.QuerArticle(function (data) {
+                                ArticleCtrl.ArticleList = data.Article
+                            });
+                        },
+                        deleteLocal: function (blogWorksID) {//移除本地
+                            for (var i = 0; i < this.ArticleList.length; i++) {
+                                if (this.ArticleList[i].BlogWorksID == blogWorksID) {
+                                    this.ArticleList.splice(i, 1);
+                                    return;
+                                }
+                            }
+                        },
+                        clickDelete: function (blogWorksID) {//删除文件
+                            var that = this;
+                            $.ajax({
+                                url: "/ArticleRequset/DeleteWorks",
+                                data: {
+                                    BlogWorksID: blogWorksID,
+                                },
+                                type: "POST",
+                                success: function (data, state, xhr) {
+                                    if (data.IsOk) {
+                                        that.deleteLocal(blogWorksID);
+                                        alert("已删除文件及其资源");
+                                        return null;
+                                    }
+                                    alert("删除失败");
+                                },
+                                compelet: function () { },
+                            });
+                        },
+                    },
+                    created: function () {
+                        this.QuerArticle(function (data) {
+                            ArticleCtrl.ArticleList = data.Article;
+                        });
+                    }
+                });
+
+            </script>
+        </div>
+
+    </div>
+    </div>

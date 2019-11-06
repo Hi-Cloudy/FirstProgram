@@ -1,0 +1,678 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{47A0F57C-50C8-4AD8-A18A-4E2AB3A0592F}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DTRBlog</RootNamespace>
+    <AssemblyName>DTRBlog</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DTR.DAL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DTR.DAL.dll</HintPath>
+    </Reference>
+    <Reference Include="DTR.DATAConfig, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\DTR.DATAConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.2\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Webdiyer.MvcPager, Version=3.0.2015.802, Culture=neutral, PublicKeyToken=f6872c5a09aed72c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Webdiyer.MvcPager.3.0.1.1\lib\Webdiyer.MvcPager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.7\lib\net45\System.Web.Webpages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Deployment">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.7\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Razor">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.7\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.Webpages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\area\static\css\chosen.min.css" />
+    <Content Include="Content\area\static\js\area_chs.js" />
+    <Content Include="Content\area\static\js\chosen.jquery.min.js" />
+    <Content Include="Content\area\static\js\jquery.min.js" />
+    <Content Include="Content\area\static\js\location_chs.js" />
+    <Content Include="Content\Article\ArticlelManage.css" />
+    <Content Include="Content\Article\ArticleWrite.css" />
+    <Content Include="Content\Article\elementCss.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\base.css" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\classify.css" />
+    <Content Include="Content\css\collection.css" />
+    <Content Include="Content\css\index.css" />
+    <Content Include="Content\css\userpage.css" />
+    <Content Include="Content\css\userstyle.css" />
+    <Content Include="Content\css\tools.css" />
+    <Content Include="Content\css\user.css" />
+    <Content Include="Content\css\Msg.css" />
+    <Content Include="Content\css\Article.css" />
+    <Content Include="Content\css\comment.css" />
+    <Content Include="Content\css\style.css" />
+    <Content Include="Content\font\iconfont.svg" />
+    <Content Include="Content\images\01.jpg" />
+    <Content Include="Content\images\c.png" />
+    <Content Include="Content\images\collection.png" />
+    <Content Include="Content\images\comment.png" />
+    <Content Include="Content\images\computer.jpg" />
+    <Content Include="Content\images\head.jpg" />
+    <Content Include="Content\images\head.png" />
+    <Content Include="Content\images\icon-all_01.png" />
+    <Content Include="Content\images\like.png" />
+    <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\newsbg01.png" />
+    <Content Include="Content\images\newsbg02.png" />
+    <Content Include="Content\images\newsbg03.png" />
+    <Content Include="Content\images\newsbg04.png" />
+    <Content Include="Content\images\top.png" />
+    <Content Include="Content\images\uncollection.png" />
+    <Content Include="Content\images\user-back.jpg" />
+    <Content Include="Content\images\yizan.png" />
+    <Content Include="Content\images\zan.png" />
+    <Content Include="Content\js\angular.min.js" />
+    <Content Include="Content\js\bootstrap.css" />
+    <Content Include="Content\js\bootstrap.min.js" />
+    <Content Include="Content\js\canvas-nest.min.js" />
+    <Content Include="Content\js\comment.js" />
+    <Content Include="Content\js\jquery-1.7.2.min.js" />
+    <Content Include="Content\js\jquery-3.3.1.min.js" />
+    <Content Include="Content\js\jQuery.hhShare.min.js" />
+    <Content Include="Content\js\jquery.min.js" />
+    <Content Include="Content\js\modernizr-2.8.3.js" />
+    <Content Include="Content\js\mouseClick.js" />
+    <Content Include="Content\js\vue.min.js" />
+    <Content Include="Content\layui\css\layui.css" />
+    <Content Include="Content\layui\css\layui.mobile.css" />
+    <Content Include="Content\layui\css\modules\code.css" />
+    <Content Include="Content\layui\css\modules\laydate\default\laydate.css" />
+    <Content Include="Content\layui\css\modules\layer\default\icon-ext.png" />
+    <Content Include="Content\layui\css\modules\layer\default\icon.png" />
+    <Content Include="Content\layui\css\modules\layer\default\layer.css" />
+    <Content Include="Content\layui\css\modules\layer\default\loading-0.gif" />
+    <Content Include="Content\layui\css\modules\layer\default\loading-1.gif" />
+    <Content Include="Content\layui\css\modules\layer\default\loading-2.gif" />
+    <Content Include="Content\layui\font\iconfont.svg" />
+    <Content Include="Content\layui\images\face\0.gif" />
+    <Content Include="Content\layui\images\face\1.gif" />
+    <Content Include="Content\layui\images\face\10.gif" />
+    <Content Include="Content\layui\images\face\11.gif" />
+    <Content Include="Content\layui\images\face\12.gif" />
+    <Content Include="Content\layui\images\face\13.gif" />
+    <Content Include="Content\layui\images\face\14.gif" />
+    <Content Include="Content\layui\images\face\15.gif" />
+    <Content Include="Content\layui\images\face\16.gif" />
+    <Content Include="Content\layui\images\face\17.gif" />
+    <Content Include="Content\layui\images\face\18.gif" />
+    <Content Include="Content\layui\images\face\19.gif" />
+    <Content Include="Content\layui\images\face\2.gif" />
+    <Content Include="Content\layui\images\face\20.gif" />
+    <Content Include="Content\layui\images\face\21.gif" />
+    <Content Include="Content\layui\images\face\22.gif" />
+    <Content Include="Content\layui\images\face\23.gif" />
+    <Content Include="Content\layui\images\face\24.gif" />
+    <Content Include="Content\layui\images\face\25.gif" />
+    <Content Include="Content\layui\images\face\26.gif" />
+    <Content Include="Content\layui\images\face\27.gif" />
+    <Content Include="Content\layui\images\face\28.gif" />
+    <Content Include="Content\layui\images\face\29.gif" />
+    <Content Include="Content\layui\images\face\3.gif" />
+    <Content Include="Content\layui\images\face\30.gif" />
+    <Content Include="Content\layui\images\face\31.gif" />
+    <Content Include="Content\layui\images\face\32.gif" />
+    <Content Include="Content\layui\images\face\33.gif" />
+    <Content Include="Content\layui\images\face\34.gif" />
+    <Content Include="Content\layui\images\face\35.gif" />
+    <Content Include="Content\layui\images\face\36.gif" />
+    <Content Include="Content\layui\images\face\37.gif" />
+    <Content Include="Content\layui\images\face\38.gif" />
+    <Content Include="Content\layui\images\face\39.gif" />
+    <Content Include="Content\layui\images\face\4.gif" />
+    <Content Include="Content\layui\images\face\40.gif" />
+    <Content Include="Content\layui\images\face\41.gif" />
+    <Content Include="Content\layui\images\face\42.gif" />
+    <Content Include="Content\layui\images\face\43.gif" />
+    <Content Include="Content\layui\images\face\44.gif" />
+    <Content Include="Content\layui\images\face\45.gif" />
+    <Content Include="Content\layui\images\face\46.gif" />
+    <Content Include="Content\layui\images\face\47.gif" />
+    <Content Include="Content\layui\images\face\48.gif" />
+    <Content Include="Content\layui\images\face\49.gif" />
+    <Content Include="Content\layui\images\face\5.gif" />
+    <Content Include="Content\layui\images\face\50.gif" />
+    <Content Include="Content\layui\images\face\51.gif" />
+    <Content Include="Content\layui\images\face\52.gif" />
+    <Content Include="Content\layui\images\face\53.gif" />
+    <Content Include="Content\layui\images\face\54.gif" />
+    <Content Include="Content\layui\images\face\55.gif" />
+    <Content Include="Content\layui\images\face\56.gif" />
+    <Content Include="Content\layui\images\face\57.gif" />
+    <Content Include="Content\layui\images\face\58.gif" />
+    <Content Include="Content\layui\images\face\59.gif" />
+    <Content Include="Content\layui\images\face\6.gif" />
+    <Content Include="Content\layui\images\face\60.gif" />
+    <Content Include="Content\layui\images\face\61.gif" />
+    <Content Include="Content\layui\images\face\62.gif" />
+    <Content Include="Content\layui\images\face\63.gif" />
+    <Content Include="Content\layui\images\face\64.gif" />
+    <Content Include="Content\layui\images\face\65.gif" />
+    <Content Include="Content\layui\images\face\66.gif" />
+    <Content Include="Content\layui\images\face\67.gif" />
+    <Content Include="Content\layui\images\face\68.gif" />
+    <Content Include="Content\layui\images\face\69.gif" />
+    <Content Include="Content\layui\images\face\7.gif" />
+    <Content Include="Content\layui\images\face\70.gif" />
+    <Content Include="Content\layui\images\face\71.gif" />
+    <Content Include="Content\layui\images\face\8.gif" />
+    <Content Include="Content\layui\images\face\9.gif" />
+    <Content Include="Content\layui\layui.all.js" />
+    <Content Include="Content\layui\layui.js" />
+    <Content Include="Content\layui\lay\modules\carousel.js" />
+    <Content Include="Content\layui\lay\modules\code.js" />
+    <Content Include="Content\layui\lay\modules\colorpicker.js" />
+    <Content Include="Content\layui\lay\modules\element.js" />
+    <Content Include="Content\layui\lay\modules\flow.js" />
+    <Content Include="Content\layui\lay\modules\form.js" />
+    <Content Include="Content\layui\lay\modules\jquery.js" />
+    <Content Include="Content\layui\lay\modules\laydate.js" />
+    <Content Include="Content\layui\lay\modules\layedit.js" />
+    <Content Include="Content\layui\lay\modules\layer.js" />
+    <Content Include="Content\layui\lay\modules\laypage.js" />
+    <Content Include="Content\layui\lay\modules\laytpl.js" />
+    <Content Include="Content\layui\lay\modules\mobile.js" />
+    <Content Include="Content\layui\lay\modules\rate.js" />
+    <Content Include="Content\layui\lay\modules\slider.js" />
+    <Content Include="Content\layui\lay\modules\table.js" />
+    <Content Include="Content\layui\lay\modules\transfer.js" />
+    <Content Include="Content\layui\lay\modules\tree.js" />
+    <Content Include="Content\layui\lay\modules\upload.js" />
+    <Content Include="Content\layui\lay\modules\util.js" />
+    <Content Include="Content\Login\static\css\reset.css" />
+    <Content Include="Content\Login\static\css\style.css" />
+    <Content Include="Content\Login\static\images\bg.jpg" />
+    <Content Include="Content\Login\static\js\app.js" />
+    <Content Include="Content\Login\static\js\particles.min.js" />
+    <Content Include="Content\Login\static\picture\name.png" />
+    <Content Include="Content\Login\static\picture\password.png" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\css\font-awesome.css" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\css\font-awesome.min.css" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\HELP-US-OUT.txt" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\css\layui.css" />
+    <Content Include="Content\js\layui.js" />
+    <Content Include="Content\static1\css\bjtx.css" />
+    <Content Include="Content\static1\css\font-awesome.min.css" />
+    <Content Include="Content\static1\css\index.css" />
+    <Content Include="Content\static1\css\m.css" />
+    <Content Include="Content\static1\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\static1\images\c01.png" />
+    <Content Include="Content\static1\images\c02.png" />
+    <Content Include="Content\static1\images\c03.png" />
+    <Content Include="Content\static1\images\c04.png" />
+    <Content Include="Content\static1\images\close.png" />
+    <Content Include="Content\static1\images\icob.png" />
+    <Content Include="Content\static1\images\icons_0_16.png" />
+    <Content Include="Content\static1\images\jt.png" />
+    <Content Include="Content\static1\images\like.jpg" />
+    <Content Include="Content\static1\images\newsbg01.png" />
+    <Content Include="Content\static1\images\newsbg02.png" />
+    <Content Include="Content\static1\images\newsbg04.png" />
+    <Content Include="Content\static1\images\quote-bg.png" />
+    <Content Include="Content\static1\images\share.png" />
+    <Content Include="Content\static1\js\frontend.js" />
+    <Content Include="Content\static1\js\index.js" />
+    <Content Include="Content\static1\js\instantclick-1.2.2.js" />
+    <Content Include="Content\static1\js\jquery-1.10.2.min.js" />
+    <Content Include="Content\static1\js\protect.js" />
+    <Content Include="Content\static1\js\scrollreveal.js" />
+    <Content Include="Content\static1\js\wind.js" />
+    <Content Include="Content\static1\js\xs.js" />
+    <Content Include="Content\static1\picture\0c23b5681193bccf3f6df7d965f24221.jpg" />
+    <Content Include="Content\static1\picture\0f47d2131d2ad5495d1e168e275a0ad1.jpg" />
+    <Content Include="Content\static1\picture\18aab61efcf426112b18288a591f5372.png" />
+    <Content Include="Content\static1\picture\31aa69352c02f8739aa784f4f5f4066d.jpg" />
+    <Content Include="Content\static1\picture\3614bfa43c88eea77241ad4393aaf037.jpg" />
+    <Content Include="Content\static1\picture\44d84081cad45cc9b404c3a48f6ad73a.jpg" />
+    <Content Include="Content\static1\picture\4986863966be137a61fc7f68fa3e3533.jpg" />
+    <Content Include="Content\static1\picture\64890eac06dbee9a94349363104f37d2.jpg" />
+    <Content Include="Content\static1\picture\73a9bb5f0ee64d26a2e7f86405096129.jpg" />
+    <Content Include="Content\static1\picture\82949a2391057b8c465d4f7fed13f7cb.jpg" />
+    <Content Include="Content\static1\picture\8f88899b5ad9be56256528db27fa18cd.jpg" />
+    <Content Include="Content\static1\picture\9151fdb7461f6d8af246dd9ffeb4a8d6.jpg" />
+    <Content Include="Content\static1\picture\996b5ae87f798dbad51803e63b85210c.jpg" />
+    <Content Include="Content\static1\picture\9b6f9c58c5de81118191525e2e82550d.jpg" />
+    <Content Include="Content\static1\picture\cc5a6737647ae276aa2e18ad1087cbf5.jpg" />
+    <Content Include="Content\static1\picture\dacc3e8a277ead26260de6b57f04f0d2.jpg" />
+    <Content Include="Content\static1\picture\e1290f24c2bc783f22488cd3105ac86b.jpg" />
+    <Content Include="Content\static1\picture\ea570428d43b63e765327282f5eb98a0.jpg" />
+    <Content Include="Content\static1\picture\eb63f05300267cd391ab2c3fa06958f9.jpg" />
+    <Content Include="Content\static1\picture\f1af25fd2ac2dd06a04fc700571aa790.jpg" />
+    <Content Include="Content\static1\picture\gicp.png" />
+    <Content Include="Content\static1\picture\icp.png" />
+    <Content Include="Content\static1\picture\personal-wx.jpg" />
+    <Content Include="Content\static1\picture\search.png" />
+    <Content Include="Content\static\base.css" />
+    <Content Include="Content\static\css\base.css" />
+    <Content Include="Content\static\css\font.css" />
+    <Content Include="Content\static\css\Loginandsignup.css" />
+    <Content Include="Content\static\css\m.css" />
+    <Content Include="Content\static\css\player.css" />
+    <Content Include="Content\static\css\swiper.min.css" />
+    <Content Include="Content\static\fonts\iconfont.svg" />
+    <Content Include="Content\static\images\2.png" />
+    <Content Include="Content\static\images\2_a1946433096_1553572398.jpg" />
+    <Content Include="Content\static\images\audio_sprite.png" />
+    <Content Include="Content\static\images\date.png" />
+    <Content Include="Content\static\images\guanbi.png" />
+    <Content Include="Content\static\images\icon-dashang.png" />
+    <Content Include="Content\static\images\icon-lm.png" />
+    <Content Include="Content\static\images\icon-qq.png" />
+    <Content Include="Content\static\images\icon-user.png" />
+    <Content Include="Content\static\images\icon-weixin.png" />
+    <Content Include="Content\static\images\icon-yonghu.png" />
+    <Content Include="Content\static\images\istop.png" />
+    <Content Include="Content\static\images\left.png" />
+    <Content Include="Content\static\images\prev_blank.png" />
+    <Content Include="Content\static\images\quote.png" />
+    <Content Include="Content\static\images\right.png" />
+    <Content Include="Content\static\images\search.png" />
+    <Content Include="Content\static\images\searchm.png" />
+    <Content Include="Content\static\images\soft-down.png" />
+    <Content Include="Content\static\images\v.png" />
+    <Content Include="Content\static\images\video.png" />
+    <Content Include="Content\static\images\view.png" />
+    <Content Include="Content\static\images\zhankai.png" />
+    <Content Include="Content\static\js\banner.js" />
+    <Content Include="Content\static\js\canvas-nest.min.js" />
+    <Content Include="Content\static\js\jquery-1.8.3.min.js" />
+    <Content Include="Content\static\js\jweixin-1.4.0.js" />
+    <Content Include="Content\static\js\loginjs.js" />
+    <Content Include="Content\static\js\main.js" />
+    <Content Include="Content\static\js\modernizr.js" />
+    <Content Include="Content\static\js\player.js" />
+    <Content Include="Content\static\js\swiper.min.js" />
+    <Content Include="Content\static\picture\133857800a4ad901b204fd36f3e1dc4c.jpg" />
+    <Content Include="Content\static\picture\1769fa8ec1bbfb36bd084703ce0cc244.jpg" />
+    <Content Include="Content\static\picture\3556363baacfb598d5359c13008f7a00.jpg" />
+    <Content Include="Content\static\picture\583d3b86ae53cb7d824d3f86f73e326e.png" />
+    <Content Include="Content\static\picture\706322d7b93c7a5fbb8ec43001aa32d7.jpg" />
+    <Content Include="Content\static\picture\719aa8704acfb4a3727e6f1c7071441c.jpg" />
+    <Content Include="Content\static\picture\75842f4d1e18d692a66c38eb172a40ab.jpg" />
+    <Content Include="Content\static\picture\77858802ef0b011a8066feb4fa6048f1.jpg" />
+    <Content Include="Content\static\picture\84d48f3798fbe1e0b16e7b944ee4b277.jpg" />
+    <Content Include="Content\static\picture\a983794ed6fa4c69d9ebb3f8b489aba9.png" />
+    <Content Include="Content\static\picture\aae769e46d61d143f2c596c9f72add0e.png" />
+    <Content Include="Content\static\picture\alipayimg.jpg" />
+    <Content Include="Content\static\picture\banner3.jpg" />
+    <Content Include="Content\static\picture\c29de6913e83ec7e2ae5ad41e221e77b.jpg" />
+    <Content Include="Content\static\picture\c40720abe2562129ec283575b1595541.jpg" />
+    <Content Include="Content\static\picture\e1d70bb0c58efaea309ebdb0c23d3758.jpg" />
+    <Content Include="Content\static\picture\e6b77d5bc5cfd0083f59d3e9cbd91239.jpg" />
+    <Content Include="Content\static\picture\ex01.png" />
+    <Content Include="Content\static\picture\ex02.png" />
+    <Content Include="Content\static\picture\ex03.png" />
+    <Content Include="Content\static\picture\ex04.png" />
+    <Content Include="Content\static\picture\ex05.png" />
+    <Content Include="Content\static\picture\ex06.png" />
+    <Content Include="Content\static\picture\ex07.png" />
+    <Content Include="Content\static\picture\ex08.png" />
+    <Content Include="Content\static\picture\logo.png" />
+    <Content Include="Content\static\picture\newspic01.jpg" />
+    <Content Include="Content\static\picture\pic01.jpg" />
+    <Content Include="Content\static\picture\pic02.jpg" />
+    <Content Include="Content\static\picture\pic03.jpg" />
+    <Content Include="Content\static\picture\pic04.jpg" />
+    <Content Include="Content\static\picture\pic05.jpg" />
+    <Content Include="Content\static\picture\pic06.jpg" />
+    <Content Include="Content\static\picture\pic07.jpg" />
+    <Content Include="Content\static\picture\pic08.jpg" />
+    <Content Include="Content\static\picture\pic09.jpg" />
+    <Content Include="Content\static\picture\search.png" />
+    <Content Include="Content\static\picture\wx.png" />
+    <Content Include="Content\static\picture\wxgzh.jpg" />
+    <Content Include="Content\Template\HeadUpload\static\css\bootstrap.css" />
+    <Content Include="Content\Template\HeadUpload\static\css\cropper.min.css" />
+    <Content Include="Content\Template\HeadUpload\static\css\font-awesome.min.css" />
+    <Content Include="Content\Template\HeadUpload\static\css\sitelogo.css" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\Template\HeadUpload\static\js\bootstrap.min.js" />
+    <Content Include="Content\Template\HeadUpload\static\js\cropper.js" />
+    <Content Include="Content\Template\HeadUpload\static\js\html2canvas.min.js" />
+    <Content Include="Content\Template\HeadUpload\static\js\jquery.min.js" />
+    <Content Include="Content\Template\HeadUpload\static\js\sitelogo.js" />
+    <Content Include="DTRDefaultResource\Default\Pictrue\head.jpg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Images\logo.png" />
+    <Content Include="Scripts\Article\editor.js" />
+    <Content Include="Scripts\Article\Element.js" />
+    <Content Include="Scripts\Article\imgDateUrl.js" />
+    <Content Include="Scripts\Article\vue.min.js" />
+    <Content Include="Scripts\Article\wangEditor.min.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery.flexText.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\CheckSumBuilder.cs" />
+    <Compile Include="App_Start\HttpClient.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ArticleController.cs" />
+    <Compile Include="Controllers\Articley\ArticleController.cs" />
+    <Compile Include="Controllers\Articley\ArticleRequsetController.cs" />
+    <Compile Include="Controllers\Articley\ArticleWriteController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LayoutController.cs" />
+    <Compile Include="Controllers\MsgController.cs" />
+    <Compile Include="Controllers\perBController.cs" />
+    <Compile Include="Controllers\PersonBlogController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ArticleViewModel.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\ArticleBase.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\ArticleCreate.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\ArticleFile.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\ArticleManage.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\ArticleUpLoadResource.cs" />
+    <Compile Include="Models\Articley\ArticleBLL\WrapPath.cs" />
+    <Compile Include="Models\Articley\ViewModel\ArticleBlogWorks.cs" />
+    <Compile Include="Models\Articley\ViewModel\ArticleWriterInfo.cs" />
+    <Compile Include="Models\Articley\ViewModel\BlogTypeUI.cs" />
+    <Compile Include="Models\Articley\ViewModel\BlogWorksUI.cs" />
+    <Compile Include="Models\Articley\ViewModel\QueryArticleCondition.cs" />
+    <Compile Include="Models\Articley\ViewModel\SaveArticleInfo.cs" />
+    <Compile Include="Models\Articley\ViewModel\SingleBlogTypeCollection.cs" />
+    <Compile Include="Models\Articley\ViewModel\SingType.cs" />
+    <Compile Include="Models\Articley\ViewModel\UpdateArticleInfo.cs" />
+    <Compile Include="Models\BlogUserViewModel.cs" />
+    <Compile Include="Models\duanxinyz.cs" />
+    <Compile Include="Models\HomeIndexBlogInfoViewModel.cs" />
+    <Compile Include="Models\HotBlogUserViewModel.cs" />
+    <Compile Include="Models\LanMu.cs" />
+    <Compile Include="Models\SearchArticleViewModel.cs" />
+    <Compile Include="Models\SmS.cs" />
+    <Compile Include="Models\SmSCode.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public\AuthorityFilter.cs" />
+    <Compile Include="Public\ExceptionFilter.cs" />
+    <Compile Include="Public\Extension.cs" />
+    <Compile Include="Public\PublicService.cs" />
+    <Compile Include="Public\SecurityCode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\web.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\font\iconfont.eot" />
+    <Content Include="Content\font\iconfont.ttf" />
+    <Content Include="Content\font\iconfont.woff" />
+    <Content Include="Content\font\iconfont.woff2" />
+    <Content Include="Content\layui\font\iconfont.eot" />
+    <Content Include="Content\layui\font\iconfont.ttf" />
+    <Content Include="Content\layui\font\iconfont.woff" />
+    <Content Include="Content\layui\font\iconfont.woff2" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\fonts\FontAwesome.otf" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\animated.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\bordered-pulled.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\core.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\fixed-width.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\font-awesome.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\icons.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\larger.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\list.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\mixins.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\path.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\rotated-flipped.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\screen-reader.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\stacked.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\less\variables.less" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\font-awesome.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_animated.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_bordered-pulled.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_core.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_fixed-width.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_icons.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_larger.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_list.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_mixins.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_path.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_rotated-flipped.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_screen-reader.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_stacked.scss" />
+    <Content Include="Content\plugin\font-awesome-4.7.0\scss\_variables.scss" />
+    <Content Include="Content\static1\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\static1\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\static1\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\static1\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\static\fonts\iconfont.eot" />
+    <Content Include="Content\static\fonts\iconfont.ttf" />
+    <Content Include="Content\static\fonts\iconfont.woff" />
+    <Content Include="Content\static\fonts\iconfont.woff2" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\Template\HeadUpload\static\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\Article\fonts\element-icons.woff" />
+    <None Include="packages.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_ArticleLayout.cshtml" />
+    <Content Include="Views\Article\_ViewStart.cshtml" />
+    <Content Include="Views\Msg\Comment.cshtml" />
+    <Content Include="Views\Shared\_MsgLayout.cshtml" />
+    <Content Include="Views\Msg\Replay.cshtml" />
+    <Content Include="Views\Msg\Attention.cshtml" />
+    <Content Include="Views\Msg\Like.cshtml" />
+    <Content Include="Views\Msg\SysNotice.cshtml" />
+    <Content Include="Views\Msg\Collect.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Shared\_UserLayout.cshtml" />
+    <Content Include="Views\Article\Author.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Article\Details.cshtml" />
+    <Content Include="Views\Article\NikeName.cshtml" />
+    <Content Include="Views\Article\HeadImg.cshtml" />
+    <Content Include="Views\Article\ReplyCommentList.cshtml" />
+    <Content Include="Views\Msg\SideMenu.cshtml" />
+    <Content Include="Views\Msg\NewsCount.cshtml" />
+    <Content Include="Views\User\Category.cshtml" />
+    <Content Include="Views\User\ArticleCategory_List.cshtml" />
+    <Content Include="Views\User\AddCategoryArticle.cshtml" />
+    <Content Include="Views\User\Follow.cshtml" />
+    <Content Include="Views\User\Fans.cshtml" />
+    <Content Include="Views\User\Collection.cshtml" />
+    <Content Include="Views\Articley\ArticleDraft.cshtml" />
+    <Content Include="Views\Articley\ArticleManage.cshtml" />
+    <Content Include="Views\Articley\ArticlePart\_PartialArticelMenu.cshtml" />
+    <Content Include="Views\Articley\ArticleWaitTest.cshtml" />
+    <Content Include="Views\Articley\ArticleWrite.cshtml" />
+    <Content Include="Views\Shared\HomeMaster.cshtml" />
+    <Content Include="Views\Home\BlogInfo.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Login.cshtml" />
+    <Content Include="Views\Home\Register.cshtml" />
+    <Content Include="Views\Home\showType.cshtml" />
+    <Content Include="Views\perB\PB.cshtml" />
+    <Content Include="Views\PersonBlog\fensi.cshtml" />
+    <Content Include="Views\PersonBlog\guangzhu.cshtml" />
+    <Content Include="Views\PersonBlog\personInfo.cshtml" />
+    <Content Include="Views\Layout\Layout.cshtml" />
+    <Content Include="Views\Shared\_LayoutMain.cshtml" />
+    <Content Include="Views\Articley\_ViewStart.cshtml" />
+    <Content Include="Views\Article\Home.cshtml" />
+    <Content Include="Views\Article\_Author.cshtml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <Content Include="Views\Article\GetCollection.cshtml" />
+    <Content Include="Views\Article\GetFans.cshtml" />
+    <Content Include="Views\Article\_Article.cshtml" />
+    <Content Include="Views\Article\_Fans.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Content\PersonBlog\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DTRBlog.ContainerFactory\DTRBlog.ContainerFactory.csproj">
+      <Project>{a125e70b-d9d5-4f47-9df7-4b48cff3b92e}</Project>
+      <Name>DTRBlog.ContainerFactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DTRBlog.IManager\DTRBlog.IManager.csproj">
+      <Project>{ae5c8961-6413-439b-b8f3-8634e2cc4acb}</Project>
+      <Name>DTRBlog.IManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DTRBlog.Models\DTRBlog.Model.csproj">
+      <Project>{123e619a-ce6e-4d30-a8af-6d2bd0c75bbe}</Project>
+      <Name>DTRBlog.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>59326</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:8097/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

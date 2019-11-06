@@ -1,0 +1,184 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>飞猪Blog</title>
+    <link type="text/css" rel="stylesheet" href="/Content/static/css/player.css">
+    <link href="/Content/static/css/base.css" rel="stylesheet">
+    <link href="/Content/static/css/m.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Content/static/css/swiper.min.css">
+    <link href="~/Content/plugin/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/static/css/font.css" rel="stylesheet" />
+    <style>
+        ul#w li a {
+            text-align: left;
+            margin-left: 28px;
+        }
+
+        ul#w li i {
+            margin-right: 15px;
+        }
+        .pull-right {
+            float: right;
+        }
+
+        .pull-left {
+            float: left;
+        }
+    </style>
+    @RenderSection("head", false)
+    <!-- 分布视图引用的css -->
+    @RenderSection("lasteCss", false)
+
+    
+</head>
+<body>
+    <input type="hidden" id="DTR-LoginUrl" value="/Home/Login" />
+    <input type="hidden" id="DTR-RegisterUrl" value="/Home/Register" />
+    <!-- 内容 -->
+    <header>
+        <div class="logo-section box">
+            @*搜索*@
+
+            <div class="search" style="margin-top:18px;">
+                <form action="/home/Seach" name="searchform" id="searchform">
+                    <input name="keyword" id="keyword" class="input_text k" placeholder="请输入关键字词"  type="text">
+                    <input class="input_submit" value="搜索" type="submit">
+                </form>
+            </div>
+            <div class="logo">
+                <a href="/">
+                    <div id="kx">飞猪Blog</div>
+                </a>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="topnav">
+            <h2><a href="/">飞猪Blog</a></h2>
+            <nav>
+                <ul id="starlist">
+                    <li><a href="/">网站首页</a></li>
+                    <li class="menu">
+                        <a href="/home/BlogInfo">文章分类</a>
+                        <ul id="test" class="sub">
+                            @Html.Action("showType", "home")
+                        </ul>
+                    </li>
+                    <li class="menu">
+                        <a href="/home/index#dtr-hblog">热门博客</a>
+                    </li>
+
+                    <li class="menu">
+                        <a href="/home/index#dtr-newblog">最新博文</a>
+                    </li>
+
+                    <li><a href="/home/index#dtr-hbuser">热门博主</a></li>
+
+                    @{
+                        if (Session["BlogID"] == null)
+                        {
+
+                            <li style="float:right">
+                                <a target="_blank" href="/Home/Register?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))" style="float: none; padding-left: 0; ">注册</a>
+                            </li>
+                            <li style="float:right">
+                                /
+                            </li>
+                            <li  style="float:right">
+                                <a target="_blank" href="/Home/Login?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))" style="float: none; padding-right: 0; ">登录</a>
+                            </li>
+                        }
+                        else
+                        {
+
+                            <li  style="float:right" class="menu">
+                                <a href="/perB/PB">
+                                    <img src="/perB/GetUserHead" class="round_icon" />
+                                    <i class="fa fa-angle-down"></i>
+                                </a>
+                                <ul id="w" class="sub" style="width:150px; ">
+                                    <li><a href="/user/follow"><i class="fa fa-lightbulb-o"></i>我的关注</a></li>
+                                    <li><a href="/user/collection"><i class="fa fa-bookmark-o"></i>我的收藏</a></li>
+                                    <li><a href="/perB/PB"><i class="fa fa-user-o"></i>个人中心</a></li>
+                                    <li><a href="/user/fans"><i class="fa fa-cog "></i>我的粉丝</a></li>
+                                    <li><a href="/@Session["BlogID"]"><i class="fa fa-address-book-o "></i>我的主页</a></li>
+                                    <li><a href="/articley/articlemanage"><i class="fa fa-address-book-o "></i>文章管理</a></li>
+                                    <li><a href="/Home/SingOut"><i class="fa fa-sign-in "></i>退出</a></li>
+                                </ul><span></span>
+                            </li>
+                            <li  style="float:right">
+                             
+
+                                <a href="/msg/comment" style="float: none; padding-left: 0; padding-right: 5px;">
+                                    <i class="fa fa-envelope-o" style="padding-right: 10px;"></i>消息
+                                    @{
+                                        int count = int.Parse(Html.Action("GetAllNewsCount", "msg").ToString());
+                                    }
+                                    @if (count != 0)
+                                    {
+                                        <span style="float: right; margin-top: 10px; color: white;background:red;padding:0 4px; border-radius: 20px; font-size: 9px; line-height: normal;">@count</span>
+                                    }
+                                </a>
+                            </li>
+                            <li  style="float:right">
+                                
+                                <a href="/articley/articleWrite" style="float: none; padding-left: 0; ">
+                                <i class="fa fa-pencil-square-o" style="padding-right:5px;"></i>
+                                写博客</a>
+                            </li>
+
+                        }
+                    }
+                </ul>
+            </nav>
+        </div>
+        <div class="search-page">
+            <div class="go-left"></div>
+            <div class="search">
+                <form action="/home/Seach"  name="searchform" id="searchform">
+                 <input name="keyword" id="keyword" class="input_text k" placeholder="请输入关键字词"  type="text">
+                    <input class="input_submit" value="搜索" type="submit">
+                </form>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </header>
+    <div class="clear blank"></div>
+    @RenderBody()
+    <footer>
+        <div class="footer box">
+            <div class="endnav">
+                <p align="center">飞猪Blog &copy; @DateTime.Now 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- 内容 结束 -->
+    <!-- 底部JavaScript -->
+    <script src="/Content/static/js/jquery-1.8.3.min.js"></script>
+    <script src="/Content/static/js/main.js"></script>
+    <script src="/Content/static/js/swiper.min.js"></script>
+    <script src="/Content/static/js/banner.js"></script>
+    <!-- 线条 -->
+    @*<script src="~/Content/js/canvas-nest.min.js"></script>*@
+    <!-- 鼠标特效 -->
+    <script src="/Content/js/mouseClick.js"></script>
+    @RenderSection("footJavascript", false)
+</body>
+</html>
+
+<script>
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Home/showType',
+        success: function (data) {
+            conosole.log(data);
+        }
+    });
+
+    $("ul#test").on("click", "li", function () {
+        alert($(this).text());
+    });
+</script>

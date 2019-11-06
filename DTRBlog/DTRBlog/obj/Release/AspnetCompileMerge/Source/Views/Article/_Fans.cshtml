@@ -1,0 +1,38 @@
+﻿@model PagedList<DTRBlog.Model.FollowListModel>
+
+<div class="my-list">
+
+
+    @if (Model.Count() == 0)
+    {
+        <div style="margin:75px auto;font-size:1.76rem;" class="text-center text-muted">
+            什么也没有
+        </div>
+    }
+<ul class="list-unstyled">
+    @foreach (var item in Model)
+    {
+
+        <li class="item">
+            <div class="item-left">
+                <a href="@Url.Action("home","article",new {BlogId=item.BlogID })">
+                    <img class="img pull-left" style="width: 3.99rem;height: 3.99rem; border-radius: 50%" src="@item.HeadImg" />
+
+                    <div class="nick-name pull-left" style="margin-top:13px;">@item.NickName</div>
+                </a>
+            </div>
+        </li>
+    }
+</ul>
+    
+
+
+</div>
+
+<div class="page-footer">
+    @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+</div>
+
+
+
+

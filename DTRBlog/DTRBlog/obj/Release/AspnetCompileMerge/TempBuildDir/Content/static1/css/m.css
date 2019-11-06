@@ -1,0 +1,306 @@
+﻿@charset "utf-8";
+
+/*导航sta*/
+
+@media screen and (max-width: 768px) {
+	.header {
+		background-color: #1C2327;
+	}
+	.logo {
+		display: block;
+		max-width: none;
+		line-height: 50px;
+		height: 50px;
+	}
+	.logo a {
+		color: white;
+	}
+	.logoleft {
+		float: none;
+		text-align: center;
+	}
+	.header .nav {
+		float: none;
+		display: block;
+		width: 100%;
+		height: auto;
+		position: fixed;
+		left: 0;
+		top: 50px;
+		background: rgba(0, 0, 0, 0.5);
+	}
+	.nav ul li {
+		float: none;
+		display: block;
+		width: 55%;
+		text-align: center;
+		background: #12b7de;
+		font-weight: bold;
+		min-height: 50px;
+		border-bottom: #49ccea 1px solid;
+		perspective: none;
+	}
+	.header .nav li:last-child {
+		padding-bottom: 120%;
+	}
+	.nav ul li a {
+		color: white;
+		line-height: 50px;
+	}
+	.nav ul li span .en {
+		display: none;
+	}
+	.nav ul li.on a.cn,
+	.nav.nav_num_2 ul li.on .nav-one .cn,
+	.nav ul li .nav-one {
+		margin-top: auto;
+	}
+	.nav ul li .childer {
+		position: unset;
+		transform: none !important;
+		width: auto;
+		padding-bottom: 0;
+		border: none;
+	}
+	.nav ul li .childer a {
+		padding-left: 0;
+		text-align: center;
+		border-bottom: 1px solid #666;
+	}
+	.nav ul li .nav-one {
+		height: 50px;
+	}
+	.dropdown:before {
+		position: absolute;
+		content: "";
+		top: 22px;
+		right: 20px;
+		background: url(../images/jt.png) no-repeat;
+		width: 8px;
+		height: 8px;
+		-ms-transition: all .5s ease;
+		-moz-transition: all .5s ease;
+		-webkit-transition: all .5s ease;
+		-o-transition: all .5s ease;
+		transition: all .5s ease;
+	}
+	.nav ul li:hover,
+	.nav ul li .childer,
+	.nav.nav_num_2 ul li.on,
+	.on {
+		background-color: #10a5c8;
+	}
+	/*XX*/
+	#mnavh {
+		margin: 3px 0 0 0;
+		padding: 0 10px;
+		position: absolute;
+	}
+	.open .navicon {
+		background: none;
+	}
+	.navicon:before,
+	.navicon:after {
+		content: '';
+		display: block;
+		width: 30px;
+		height: 5px;
+		position: absolute;
+		background: #fff;
+		-webkit-transition-property: margin, -webkit-transform;
+		transition-property: margin, -webkit-transform;
+		transition-property: margin, transform;
+		transition-property: margin, transform, -webkit-transform;
+		-webkit-transition-duration: 300ms;
+		transition-duration: 300ms;
+	}
+	.navicon:after {
+		margin-top: 10px;
+	}
+	.navicon:before {
+		margin-top: -10px;
+	}
+	.open .navicon:after {
+		margin-top: 0;
+		-webkit-transform: rotate(-45deg);
+		transform: rotate(-45deg);
+	}
+	.open .navicon:before {
+		margin-top: 0;
+		-webkit-transform: rotate(45deg);
+		transform: rotate(45deg);
+	}
+	.navicon {
+		display: block;
+		position: relative;
+		width: 30px;
+		height: 5px;
+		background-color: #fff;
+		margin-top: 20px;
+	}
+	#main-menu {
+		display: none;
+		width: 100%;
+	}
+	.nav-h {
+		height: 50px;
+	}
+	/*登陆搜索*/
+	.denglu {
+		position: absolute;
+		right: 4%;
+		top: 0;
+	}
+	.denglu .search-btn,
+	.denglu .login {
+		width: 35px;
+		line-height: 50px;
+		text-align: center;
+		line-height: 50px;
+	}
+	.personal {
+		width: 80px !important;
+	}
+	.denglu .search-btn,
+	.denglu .login a {
+		color: white;
+	}
+	.fm .kw {
+		width: 45%;
+	}
+	.fm .search-this-site {
+		width: 20%;
+	}
+}
+
+
+/*导航end*/
+
+
+/*公共底部sta*/
+
+@media only screen and (max-width: 768px) {
+	.xnav {
+		display: none;
+	}
+}
+
+
+/*公共底部end*/
+
+
+/*首页sta*/
+
+@media only screen and (max-width: 768px) {
+	.index-article-list {
+		width: 100%;
+	}
+	.rbox {
+		width: 100%;
+	}
+	.index-article-list .list-main-text {
+		width: 66%;
+	}
+}
+
+
+/*首页end*/
+
+
+/*列表页sta*/
+
+@media only screen and (max-width: 768px) {
+	.ctitle span {
+		margin-top: 35px;
+	}
+	.rnav {
+		margin: 48px auto 10px auto;
+	}
+	.classification {
+		width: 33.33%;
+	}
+	.article-list .title {
+		padding: 0;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+	}
+	.article-list p {
+		display: none;
+	}
+	.nmore {
+		display: none;
+	}
+	.article-list .autor {
+		padding: 0;
+		margin-top: 4px;
+		margin-bottom: 1px;
+	}
+	.viewnum {
+		display: none;
+	}
+	.article-list .autor a.fl {
+		display: none;
+	}
+	.article-list ul li {
+		padding-bottom: 10px;
+		padding-top: 10px;
+	}
+	.article-list .img {
+		width: 33.3%
+	}
+	.list-main-text {
+		width: 62%;
+	}
+}
+
+
+/*列表页end*/
+
+
+/*文章页sta*/
+
+@media only screen and (max-width: 768px) {
+	.article h2 {
+		font-size: 20px;
+	}
+	.article-content {
+		/*padding: 25px 15px 40px !important;*/
+	}
+	.article .author {
+		text-align: left;
+		width: 97%;
+	}
+}
+
+
+/*文章页end*/
+
+
+/**
+ * 登陆 start
+ */
+
+@media only screen and (max-width: 768px) {}
+
+
+/**
+ * 登陆 end
+ */
+
+
+/**
+ * 友情链接 start
+ */
+
+@media only screen and (max-width: 768px) {
+	.site_tj li {
+		width: 20%;
+	}
+}
+
+
+/**
+ * 友情链接 end
+ */

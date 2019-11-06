@@ -1,0 +1,160 @@
+﻿@using DTR.DAL
+@model List<DTR.DAL.BlogWorks>
+
+    <div class="article-list index-article-list fl">
+
+
+        <ul class="article-list-ul">
+            @{
+                foreach (var item in Model)
+                {
+
+                    <li>
+                        <a href="/article/65/4.html" class="img fl oh">
+                            @*<img src="https://www.,.,.,..com/upload/default/20190327/996b5ae87f798dbad51803e63b85210c.jpg" class="img-responsive" alt="再苦也要笑一笑！" />*@
+
+                            <img src="~/Content/static1/picture/dacc3e8a277ead26260de6b57f04f0d2.jpg" class="img-responsive" />
+
+                        </a>
+                        <div class="list-main-text">
+                            <h3 class="title">
+                                <b>【顶】</b>
+                                <a class="" href="/article/65/4.html">@item.Title</a>
+                            </h3>
+                            <p class="con">@item.Introduc</p>
+                            <div class="autor">
+                                <span class="lm fl">
+                                    <i class="fa fa-tags"></i>
+                                    <a href="/list/4.html" title="心得笔记" target="_blank" class="classname">@item.BlogType.BlogTypeName</a>
+                                </span>
+                                <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>@item.PublishDate</span>
+                                <span class="viewnum fl" title="浏览"><i class="fa fa-commenting-o"></i>评论（@item.BlogComment.Count()）</span>
+                                @*<a class="fl" href="/portal/article/dolike/id/65.html" title="点赞">
+                                    <span class="pingl"><i class="fa fa-heart"></i>点赞(@item)</span>
+                                </a>*@
+                                <a class="nmore fr" href="/article/65/4.html">MORE</a>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </li>
+
+                }
+            }
+            <li>
+                
+                <div class="list-main-text">
+                    <h3 class="title">
+                        <b>【顶】</b>
+                        <a class="" href="/article/49/4.html">你的微笑，胜过阳光</a>
+                    </h3>
+                    <p class="con">林语堂说：人生在世，还不是有时笑笑人家，有时给人家笑笑。生活像一面镜，微笑是面对生活最好的样子。请记得，让这个世界灿烂的不是阳光，而是你的微笑。</p>
+                    <div class="autor">
+                        <span class="lm fl">
+                            <i class="fa fa-tags"></i>
+                            <a href="/list/4.html" title="心得笔记" target="_blank" class="classname">心得笔记</a>
+                        </span>
+                        <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>2019-03-13</span>
+                        <span class="viewnum fl" title="浏览"><i class="fa fa-eye"></i>浏览（<a href="/">1485</a>）</span>
+                        <a class="fl" href="/portal/article/dolike/id/49.html" title="点赞">
+                            <span class="pingl"><i class="fa fa-heart"></i>喜欢(2)</span>
+                        </a>
+                        <a class="nmore fr" href="/article/49/4.html">MORE</a>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>
+
+
+            
+
+
+            @*<li>
+                <a href="/article/120/1.html" class="img fl oh">
+                    <img src="https://www.,.,.,..com/upload/portal/20190902/eb63f05300267cd391ab2c3fa06958f9.jpg" class="img-responsive" alt="你还在用原生的支付API吗？" />
+                </a>
+                <div class="list-main-text">
+                    <h3 class="title">
+                        <a class="" href="/article/120/1.html">你还在用原生的支付API吗？</a>
+                    </h3>
+                    <p class="con">原生支付固然是好，但是就是需要你自己一步一步的去搭建，封装代码等。这里介绍一下如何用第三方api支付：payment</p>
+                    <div class="autor">
+                        <span class="lm fl">
+                            <i class="fa fa-tags"></i>
+                            <a href="/list/1.html" title="php随笔" target="_blank" class="classname">php随笔</a>
+                        </span>
+                        <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>2019-08-29</span>
+                        <span class="viewnum fl" title="浏览"><i class="fa fa-eye"></i>浏览（<a href="/">154</a>）</span>
+                        <a class="fl" href="/portal/article/dolike/id/120.html" title="点赞">
+                            <span class="pingl"><i class="fa fa-heart"></i>喜欢(0)</span>
+                        </a>
+                        <a class="nmore fr" href="/article/120/1.html">MORE</a>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>*@
+
+
+            @*<li>
+                <a href="/article/118/1.html" class="img fl oh">
+                    <img src="https://www.,.,.,..com/upload/portal/20190828/0f47d2131d2ad5495d1e168e275a0ad1.jpg" class="img-responsive" alt="discuz模板语法" />
+                </a>
+                <div class="list-main-text">
+                    <h3 class="title">
+                        <a class="" href="/article/118/1.html">discuz模板语法</a>
+                    </h3>
+                    <p class="con">discuz模板语法</p>
+                    <div class="autor">
+                        <span class="lm fl">
+                            <i class="fa fa-tags"></i>
+                            <a href="/list/1.html" title="php随笔" target="_blank" class="classname">php随笔</a>
+                        </span>
+                        <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>2019-08-28</span>
+                        <span class="viewnum fl" title="浏览"><i class="fa fa-eye"></i>浏览（<a href="/">141</a>）</span>
+                        <a class="fl" href="/portal/article/dolike/id/118.html" title="点赞">
+                            <span class="pingl"><i class="fa fa-heart"></i>喜欢(0)</span>
+                        </a>
+                        <a class="nmore fr" href="/article/118/1.html">MORE</a>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>*@
+
+
+            @*<li>
+                <a href="/article/117/1.html" class="img fl oh">
+                    <img src="https://www.,.,.,..com/upload/portal/20190827/0c23b5681193bccf3f6df7d965f24221.jpg" class="img-responsive" alt="php函数" />
+                </a>
+                <div class="list-main-text">
+                    <h3 class="title">
+                        <a class="" href="/article/117/1.html">php函数</a>
+                    </h3>
+                    <p class="con">开发中常用的php函数整理</p>
+                    <div class="autor">
+                        <span class="lm fl">
+                            <i class="fa fa-tags"></i>
+                            <a href="/list/1.html" title="php随笔" target="_blank" class="classname">php随笔</a>
+                        </span>
+                        <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>2019-08-27</span>
+                        <span class="viewnum fl" title="浏览"><i class="fa fa-eye"></i>浏览（<a href="/">157</a>）</span>
+                        <a class="fl" href="/portal/article/dolike/id/117.html" title="点赞">
+                            <span class="pingl"><i class="fa fa-heart"></i>喜欢(0)</span>
+                        </a>
+                        <a class="nmore fr" href="/article/117/1.html">MORE</a>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>*@
+
+
+
+
+
+
+        </ul>
+        
+    </div>

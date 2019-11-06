@@ -1,0 +1,240 @@
+﻿@{
+    ViewBag.Title = "飞猪Blog";
+    Layout = "~/Views/Shared/HomeMaster.cshtml";
+
+}
+@using DTR.DATAConfig
+@using DTR.DAL
+@using DTRBlog.Models
+@model List<DTR.DAL.BlogWorks>
+    <article>
+        <!-- banner begin-->
+        <div class="banner">
+            <!--轮播-->
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    @{
+                        List<BlogWorks> list = ViewData["key"] as List<BlogWorks>;
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                             string query = "?query=" + new Random().Next(1, 10000000).ToString();
+                            <div class="swiper-slide">
+                                <a href="/@list[i].BlogID/Article/@list[i].BlogWorksID">
+                                    <img src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath + list[i].WorksPath + DATAPathConfigs.WorksFace+query)">
+                                    <span>推荐</span>
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+        <!-- banner end-->
+        <!-- headline-boc begin-->
+        <div class="headline-box whitebg">
+           <!--侧边-->
+            <div class="headline-news">
+                <ul class="headline-news-list" style="border-top:#ddd 0px solid">
+                    @{
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            if (i == 0)
+                            {
+                                <h2 class="headline-news-title"><span>头条</span><a href="/@list[i].BlogID/Article/@list[i].BlogWorksID" target="_blank" title="@list[i].Introduc">@list[i].Title</a></h2>
+                                <p class="headline-news-smalltext">@list[i].Introduc</p>
+                            }
+                            else
+                            {
+                                <li><a href="/@list[i].BlogID/Article/@list[i].BlogWorksID" target="_blank" title="@list[i].Introduc">@list[i].Title</a></li>
+                            }
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+        <!-- headline-box end-->
+        <!--类型-->
+        <div class="clear blank"></div>
+        <div class="tuijian-news box whitebg tab-num01">
+            <div class="gd-box">
+                <ul id="tab">
+                    @{
+                        int typei = 0;
+                        IEnumerable<HomeIndexBlogInfoViewModel> blogType = ViewData["BlogTypeInfo"] as IEnumerable<HomeIndexBlogInfoViewModel>;
+                        foreach (HomeIndexBlogInfoViewModel item in blogType)
+                        {
+                            if (typei == 0)
+                            {
+                                <li class="tab-current">@item.BlogType.BlogTypeName</li>
+                                typei++;
+                            }
+                            else
+                            {
+                                <li>@item.BlogType.BlogTypeName</li>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+            <div id="tab-content" >
+                @{
+                    foreach (HomeIndexBlogInfoViewModel itme in blogType)
+                    {
+                        @(Html.Raw("<section class='tab-box'>"))
+                        bool isFirst = true;
+                        foreach (BlogWorks works in itme.Works)
+                        {
+                            DateTime date = works.PublishDate ?? DateTime.MinValue;
+                            if (isFirst)
+                            {
+                                 string query = "?query=" + new Random().Next(1, 10000000).ToString();
+
+                                <div class="tuijian-news-pic">
+                                    <i><a href="/@works.BlogID/Article/@works.BlogWorksID"><img src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath + works.WorksPath + DATAPathConfigs.WorksFace+query)" alt="鄙人从事IT业已经有9年时间,少壮不努力，长大搞IT"><span>推荐</span></a></i>
+                                    <h2><a href="/@works.BlogID/Article/@works.BlogWorksID">@works.Title</a></h2>
+                                    <p>@works.Introduc</p>
+                                    <a href="/home/BlogInfo/@itme.BlogType.BlogTypeID" class="btn-blue-border">阅读更多</a>
+                                </div>
+                                isFirst = false;
+                                continue;
+                            }
+                            <div class="tuijian-news-list">
+                                <ul>
+                                    <li>
+                                        <a target="_blank" href="/@works.BlogID/Article/@works.BlogWorksID">
+                                            <span><b>@date.Day</b>@(date.Year + "-" + date.Month)</span>
+                                            <h3>@works.Title</h3>
+                                            <p>@works.Introduc</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        <span class="tab-a-more"><a title=""><i></i><i></i><i></i></a></span>
+                        @(Html.Raw("</section>"))
+                    }
+                }
+            </div>
+        </div>
+        <!-- tuijian-news end-->
+        <!-- pics end-->
+        <div class="clear blank"></div>
+        <div>
+            
+            <div class="videos box whitebg tab-num04" id="dtr-hblog">
+                <div class="gd-box">
+                    <ul id="tab">
+                        <li class="tab-current">热门博客</li>
+                    </ul>
+                </div>
+                <div id="tab-content">
+                    <section class="tab-box">
+                        <div class="videos-list">
+                            <ul>
+                                @{
+                                    List<BlogWorks> hotblog = ViewData["hotblog"] as List<BlogWorks>;
+                                    foreach (var item in hotblog)
+                                    {
+
+                                        string query = "?query=" + new Random().Next(1, 10000000).ToString();
+
+                                        <li>
+                                            <a href="/@item.BlogID/Article/@item.BlogWorksID">
+                                                <i><img src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath + item.WorksPath + DATAPathConfigs.WorksFace+query)"></i>
+                                                <h2>@item.Title</h2>
+                                                <p><b class="datetime">@item.PublishDate.Value.ToString("yyyy-MM-dd")</b><span class="viewd">(@item.Collection.Count)人已收藏</span></p>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                        <span class="tab-a-more"><a title=""><i></i><i></i><i></i></a></span>
+                    </section>
+                </div>
+            </div>
+            <!-- videos end-->
+        </div>
+        <div class="blank clear"></div>
+
+        <div class="wenzi whitebg box tab-num05" id="dtr-newblog">
+            <div class="gd-box">
+                <ul id="tab">
+                    <li class="tab-current">最新博文</li>
+                </ul>
+            </div>
+            <div id="tab-content">
+                <section class="tab-box">
+                    <div class="wenzi-list">
+                        <ul class="wenzi-left">
+                            @{
+                                List<BlogWorks> date1 = ViewData["key3"] as List<BlogWorks>;
+                                for (int i = 0; i < date1.Count; i++)
+                                {
+                                    if (i <= 8)
+                                    {
+                                        <li><span>@date1[i].PublishDate.Value.Year-@date1[i].PublishDate.Value.Month-@date1[i].PublishDate.Value.Month</span><a href="/@date1[i].BlogID/Article/@date1[i].BlogWorksID" title="">@date1[i].Title</a></li>
+                                    }
+                                }
+                            }
+                        </ul>
+                        <ul class="wenzi-right">
+                            @{
+                                for (int i = 0; i < date1.Count; i++)
+                                {
+                                    if (i > 8)
+                                    {
+                                        <li><span>@date1[i].PublishDate.Value.Year-@date1[i].PublishDate.Value.Month-@date1[i].PublishDate.Value.Month</span><a href="/@date1[i].BlogID/Article/@date1[i].BlogWorksID" title="">@date1[i].Title</a></li>
+                                    }
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <span class="tab-a-more"><a ><i></i><i></i><i></i></a></span>
+                </section>
+            </div>
+        </div>
+        <!-- wenzi end-->
+        @*<div class="clear"></div>*@
+        <div class="ad ad-all"></div>
+ 
+        <div class="wenzi whitebg box tab-num06" id="dtr-hbuser">
+            <div class="gd-box">
+                <ul id="tab">
+                    <li class="tab-current">热门博主</li>
+                </ul>
+            </div>
+            <div id="tab-content">
+                <section class="tab-box">
+                    <div class="down-list">
+                        <ul>
+                            @{
+                                foreach (HotBlogUserViewModel userInfo in ViewData["key4"] as IEnumerable<HotBlogUserViewModel>)
+                                {
+                                 string query = "?query=" + new Random().Next(1, 10000000).ToString();
+
+                                    <li>
+                                        <a href="/@userInfo.BlogUser.BlogID" target="_blank" class="dl-link">
+                                            <i><img src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath + userInfo.BlogUser.UserPath + DATAPathConfigs.BlogUserHeaderImg+query)"></i>
+                                            <h2>@userInfo.BlogUser.Nikename<span>粉丝(@(userInfo.FollowCount ?? 0))&nbsp;点赞(@(userInfo.SupportCount ?? 0))</span></h2>
+                                            <p>@userInfo.BlogUser.Industry</p>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <span class="tab-a-more"><a><i></i><i></i><i></i></a></span>
+                </section>
+            </div>
+        </div>
+        <div class="clear blank"></div>
+    </article>
+
+<script>
+
+</script>

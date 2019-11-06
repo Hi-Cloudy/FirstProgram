@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> 追梦博客</title>
+    <script type="text/javascript">
+        var _PageHeight = document.documentElement.clientHeight,
+            _PageWidth = document.documentElement.clientWidth;
+        var _LoadingTop = _PageHeight > 61 ? (_PageHeight - 61) / 2 : 0,
+            _LoadingLeft = _PageWidth > 215 ? (_PageWidth - 215) / 2 : 0;
+        var _LoadingHtml = '<div id="loadingDiv" style="position:absolute;left:0;width:100%;height:' + _PageHeight + 'px;top:0;background:#f3f8ff;opacity:0.8;filter:alpha(opacity=80);z-index:10000;"><div style="position: absolute; cursor1: wait; left: ' + _LoadingLeft + 'px; top:' + _LoadingTop + 'px; width: auto; height: 57px; line-height: 57px; padding-left: 50px; padding-right: 50px; background: #fff url(/Content/loading.gif) no-repeat scroll 5px 10px; border: 2px solid #95B8E7; color: #696969; font-family:\'Microsoft YaHei\';">页面加载中，请等待...</div></div>';
+        document.write(_LoadingHtml);
+        document.onreadystatechange = completeLoading;
+        function completeLoading() {
+            if (document.readyState == "complete") {
+                var loadingMask = document.getElementById('loadingDiv');
+                loadingMask.parentNode.removeChild(loadingMask);
+            }
+        }
+    </script>
+    <link rel="icon" href="~/Images/logo.png">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <link href="~/Content/css/Msg.css" rel="stylesheet" />
+    <style type="text/css">
+        .DTRLayout-Container {
+            margin-top: 160px;
+        }
+
+        .iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+        }
+    </style>
+    @RenderSection("head", false)
+</head>
+<body>
+    <div class="iframe">
+        <iframe id="DTR-nav" frameborder="0" width="100%" height="160" src="/Layout/Layout?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))" scrolling="no" style="position:relative;z-index:2"></iframe>
+    </div>
+    <div class="DTRLayout-Container">
+        <div class="container mt-r2">
+            <div class="row">
+                <div class="col-sm-3 com-w3ls" style="background-color:#fff ;padding:0;border:1px solid #fff;border-right:1px solid #f0f0f0">
+                    @{
+                        string actionName = Request.RequestContext.RouteData.Values["action"] as string;
+                    }
+                    <ul class="nav nav-pills nav-stacked mail-nav main-menu">
+                        <li class="@(actionName.ToLower() == "comment" ? "active" : "")">
+                            <a href="@Url.Action("comment","msg")">
+                                <input type="hidden" id="type-1" />
+                                <font style="vertical-align: inherit;">评论</font>
+                                @Html.Action("NewsCount", new { NewsType = 1 })
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "attention" ? "active" : "")">
+                            <a href="@Url.Action("attention","msg")">
+                                <input type="hidden" id="type-2" />
+                                <font style="vertical-align: inherit;">关注</font>
+                                @Html.Action("NewsCount", new { NewsType = 2 })
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "like" ? "active" : "")">
+                            <a href="@Url.Action("like","msg")">
+                                <input type="hidden" id="type-3" />
+                                <font style="vertical-align: inherit;">点赞</font>
+                                @Html.Action("NewsCount", new { NewsType = 3 })
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "collect" ? "active" : "")">
+                            <a href="@Url.Action("collect","msg")">
+                                <input type="hidden" id="type-4" />
+                                <font style="vertical-align: inherit;">收藏</font>
+                                @Html.Action("NewsCount", new { NewsType = 4 })
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "replay" ? "active" : "")">
+                            <a href="@Url.Action("replay","msg")">
+                                <input type="hidden" id="type-5" />
+                                <font style="vertical-align: inherit;">回复</font>
+                                @Html.Action("NewsCount", new { NewsType = 5 })
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "sysnotice" ? "active" : "")">
+                            <a href="@Url.Action("sysnotice","msg")">
+                                <input type="hidden" id="type-6" />
+                                <font style="vertical-align: inherit;">系统通知</font>
+                                @Html.Action("NewsCount", new { NewsType = 6 })
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-9 mail-w3agile" style="background-color:#fff;min-height:670px;">
+                    @RenderBody()
+                </div>
+            </div>
+            <hr />
+        </div>
+        </div>
+        <div class="module-yun-tip" style="top: 54px; left: 50%; margin-left: -54px; display: none; opacity: 0.7;">
+            <div class="tip-inner">
+                <span class="tip-msg">正在操作中 . . .</span>
+            </div>
+        </div>
+
+        <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+        <script src="~/Scripts/bootstrap.min.js"></script>
+
+        <script>
+            //$('ul.main-menu li a').each(function () {
+            //    if ($($(this))[0].href == String(window.location)) {
+            //        $(this).parent().parent().removeClass("active");
+            //        $(this).parent().addClass('active');
+            //    }
+            //});
+            DTRIframe = document.getElementById("DTR-nav").contentWindow;
+            $('ul.blog-msg li div.remove-msg a.readed').click(function () {
+                var that = $(this);
+                if ($(this).parent().parent("li").hasClass("notice-active")) {
+                    var newID = $(this).parent().parent("li").find(".newID").val();
+                    var typeID = $(this).parent().parent("li").find(".typeID").val();
+                    console.log(newID);
+                    $(".module-yun-tip").find(".tip-msg").text("正在操作中 . . .")
+                    $(".module-yun-tip").show();
+
+                    $.ajax({
+                        url: "/Msg/CancelReadState",
+                        type: "post",
+                        data: {
+                            Id: newID,
+                            TypeID: typeID
+                        },
+                        success: function (data) {
+                            if (data.code == 1) {
+                                that.parent().parent("li.notice-active").removeClass("notice-active");
+
+                                $(".module-yun-tip").find(".tip-msg").text("操作成功！");
+                                $(".module-yun-tip").fadeOut(2000);
+                                that.hide();
+                                $.ajax({
+                                    url: "/Msg/FindCount",
+                                    type: "post",
+                                    data: {
+                                        TypeID: data.typeId
+                                    },
+                                    success: function (count) {
+                                        $("#type-" + data.typeId).siblings("span").find("font").html(count);
+                                        if (count == 0) {
+                                            $("#type-" + data.typeId).siblings("span").remove();
+                                        }
+                                    }
+                                });
+
+                                   $.ajax({
+                                    url: "/Msg/GetAllNewsCount",
+                                    type: "post",
+                                    success: function (count) {
+                                         console.info(count);
+                                        var ele = DTRIframe.document.getElementById("dtr-myallcount");
+
+                                        ele.innerText = count;
+                                        console.info(count);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            //setTimeout(function () {
+            //    var ele = DTRIframe.document.getElementById("dtr-myallcount");
+            //    ele.innerText = "3343";
+            //},2000);
+            
+            $('ul.blog-msg li div.remove-msg a.del').click(function () {
+                var that = $(this);
+                if (confirm("确认删除这条消息？")) {
+                    var newID = $(this).parent().parent("li").find(".newID").val();
+                    var typeID = $(this).parent().parent("li").find(".typeID").val();
+                    console.log(newID);
+                    $(".module-yun-tip").find(".tip-msg").text("正在操作中 . . .")
+                    $(".module-yun-tip").show();
+                    $.ajax({
+                        url: "/Msg/DelNews",
+                        type: "post",
+                        data: {
+                            Id: newID,
+                            TypeID: typeID
+                        },
+                        success: function (data) {
+                            if (data.code == 1) {
+                                that.parent().parent("li.page-header").remove();
+
+                                $(".module-yun-tip").find(".tip-msg").text("操作成功！");
+                                $(".module-yun-tip").fadeOut(2000);
+
+                                $.ajax({
+                                    url: "/Msg/FindCount",
+                                    type: "post",
+                                    data: {
+                                        TypeID: data.typeId
+                                    },
+                                    success: function (count) {
+                                        $("#type-" + data.typeId).siblings("span").find("font").html(count);
+                                        if (count == 0) {
+                                            $("#type-" + data.typeId).siblings("span").remove();
+                                        }
+                                    }
+                                });
+
+                                 $.ajax({
+                                    url: "/Msg/GetAllNewsCount",
+                                    type: "post",
+                                    success: function (count) {
+                                         console.info(count);
+                                        var ele = DTRIframe.document.getElementById("dtr-myallcount");
+
+                                        ele.innerText = count;
+                                        console.info(count);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            $('a.del-all').click(function () {
+                if (confirm("确认删除全部消息？")) {
+                    var that = $(this);
+                    var typeID = $(this).siblings("#newsType").val();
+                    $(".module-yun-tip").find(".tip-msg").text("正在操作中 . . .");
+                    $(".module-yun-tip").show();
+                    $.ajax({
+                        url: "/Msg/DelAll",
+                        type: "post",
+                        data: {
+                            TypeID: typeID
+                        },
+                        success: function (data) {
+                            if (data.code == 1) {
+                                $("ul.blog-msg li").remove();
+                                $(".module-yun-tip").find(".tip-msg").text("操作成功！");
+                                $(".module-yun-tip").fadeOut(2000);
+                                $.ajax({
+                                    url: "/Msg/FindCount",
+                                    type: "post",
+                                    data: {
+                                        TypeID: data.typeId
+                                    },
+                                    success: function (count) {
+                                        $("#type-" + data.typeId).siblings("span").find("font").html(count);
+                                        if (count == 0) {
+                                            $("#type-" + data.typeId).siblings("span").remove();
+                                            $("#bootstrappager").hide();
+                                        }
+                                    }
+                                });
+
+                                $.ajax({
+                                    url: "/Msg/GetAllNewsCount",
+                                    type: "post",
+                                    success: function (count) {
+                                         console.info(count);
+                                        var ele = DTRIframe.document.getElementById("dtr-myallcount");
+
+                                        ele.innerText = count;
+                                        console.info(count);
+                                    }
+                                });
+                            }
+                        }
+                    })
+                }
+            });
+        </script>
+</body>
+</html>

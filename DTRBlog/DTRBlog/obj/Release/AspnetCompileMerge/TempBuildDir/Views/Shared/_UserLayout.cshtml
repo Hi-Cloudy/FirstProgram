@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>追梦博客</title>
+    <script type="text/javascript">
+        var _PageHeight = document.documentElement.clientHeight,
+            _PageWidth = document.documentElement.clientWidth;
+        var _LoadingTop = _PageHeight > 61 ? (_PageHeight - 61) / 2 : 0,
+            _LoadingLeft = _PageWidth > 215 ? (_PageWidth - 215) / 2 : 0;
+        var _LoadingHtml = '<div id="loadingDiv" style="position:absolute;left:0;width:100%;height:' + _PageHeight + 'px;top:0;background:#f3f8ff;opacity:0.8;filter:alpha(opacity=80);z-index:10000;"><div style="position: absolute; cursor1: wait; left: ' + _LoadingLeft + 'px; top:' + _LoadingTop + 'px; width: auto; height: 57px; line-height: 57px; padding-left: 50px; padding-right: 50px; background: #fff url(/Content/loading.gif) no-repeat scroll 5px 10px; border: 2px solid #95B8E7; color: #696969; font-family:\'Microsoft YaHei\';">页面加载中，请等待...</div></div>';
+        document.write(_LoadingHtml);
+        document.onreadystatechange = completeLoading;
+        function completeLoading() {
+            if (document.readyState == "complete") {
+                var loadingMask = document.getElementById('loadingDiv');
+                loadingMask.parentNode.removeChild(loadingMask);
+            }
+        }
+    </script>
+    <style type="text/css">
+        .DTRLayout-Container {
+            margin: 160px;
+        }
+
+        .iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+        }
+    </style>
+
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <link href="~/Content/css/user.css" rel="stylesheet" />
+    <link rel="icon" href="~/Images/logo.png">
+    @RenderSection("head", false)
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <div class="iframe" style="min-width:900px;">
+        <iframe id="DTR-nav" frameborder="0" width="100%" height="160" src="/Layout/Layout?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))" scrolling="no" style="position:relative;z-index:2"></iframe>
+    </div>
+    <div class="DTRLayout-Container"  style="min-width:900px;">
+        <div class="container mt-r2">
+            <div class="row">
+                <div class="col-sm-3" style="background-color:#fff ;padding:0;border:1px solid #fff;border-right:1px solid #f0f0f0">
+                    <div class="user">
+                        <div class="user-pic">
+                            @Html.Action("GetHeadImg", "user")
+                        </div>
+                        <div class="user-name text-muted">
+                            <font style="vertical-align: inherit;">
+                                <font style="vertical-align: inherit;">@(Session["NickName"])</font>
+                            </font>
+                        </div>
+                    </div>
+                    @{
+                        string actionName = Request.RequestContext.RouteData.Values["action"] as string;
+                    }
+                    <ul class="nav nav-pills nav-stacked mail-nav main-menu">
+
+
+                        <li>
+                            <a href="@Url.Action("pb","perb")">
+                                <font style="vertical-align: inherit;">个人资料</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("follow","user")">
+                                <font style="vertical-align: inherit;">我的关注</font>
+                                <i class="my-icon"></i>
+                            </a>
+
+                        </li>
+                        <li>
+                            <a href="@Url.Action("collection","user")">
+                                <font style="vertical-align: inherit;">我的收藏</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("fans","user")">
+                                <font style="vertical-align: inherit;">我的粉丝</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="divHeight"></div>
+                        </li>
+
+                        <li>
+                            <a href="@Url.Action("articlemanage","articley")" target="_blank">
+                                <font style="vertical-align: inherit;">文章管理</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.Action("comment","msg")" target="_blank">
+                                <font style="vertical-align: inherit;">我的消息</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+                        <li class="@(actionName.ToLower() == "articleategory_list" ? "active" : "")">
+                            <a href="@Url.Action("category","user")">
+                                <font style="vertical-align: inherit;">个人文章分类</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>
+                        @*<li>
+                            <div class="divHeight"></div>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <font style="vertical-align: inherit;">退出登录</font>
+                                <i class="my-icon"></i>
+                            </a>
+                        </li>*@
+                    </ul>
+                </div>
+
+                <div class="col-sm-9" style="background-color:#fff;min-height:670px;">
+                    @RenderBody()
+                </div>
+            </div>
+            <hr />
+        </div>
+    </div>
+    <script>
+        $('ul.main-menu li a').each(function () {
+            if ($($(this))[0].href == String(window.location)) {
+                $(this).parent().parent().removeClass("active");
+                $(this).parent().addClass('active');
+            }
+        });
+    </script>
+</body>
+</html>

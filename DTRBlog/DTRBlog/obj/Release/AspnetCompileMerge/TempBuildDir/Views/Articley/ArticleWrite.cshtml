@@ -1,0 +1,92 @@
+﻿@model DTRBlog.Models.Articley.ViewModel.ArticleWriterInfo
+@{
+    ViewBag.Title = "ArticleWrite";
+}
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/Article/vue.min.js"></script>
+<script src="~/Scripts/Article/wangEditor.min.js"></script>
+<script src="~/Scripts/Article/Element.js"></script>
+@section head{
+    @*<link rel="stylesheet" href="~/Content/Article/ArticlelManage.css" />*@
+    <link rel="stylesheet" href="~/Content/Article/ArticleWrite.css" />
+}
+<br />
+<input type="hidden" id="blogID" value="@Model.BlogID" />
+<input type="hidden" id="worksID" value="@Model.BlogWorks" />
+<input type="hidden" id="worksPath" value="@Model.WorksContent.ArticleDicretionPath" />
+<div class=" container">
+    <div id="worksArea">
+        <!--工具栏-->
+        <div id="worksCtrl" class="toolbar">
+        </div>
+        <div class="toolbar menuContainer" id="toolbar">
+            <div class="w-e-menu mentItem" title="保存文章/ctrl+s"><i class="glyphicon glyphicon-book" v-on:click="save"></i></div>
+            <div class="w-e-menu mentItem" title="固定编辑器的高度"><i class="glyphicon glyphicon-stop" v-on:click="fixed"></i></div>
+        </div>
+        <!--工具栏-->
+        <!--文章详情设置-->
+        <div id="ArticleInfo">
+            <div>
+                <p><strong>标题：</strong></p>
+                <input type="text" class="form-control" v-model="ArticleInfo.Title" />
+            </div>
+            <div>
+                <p><strong>封面：</strong></p>
+                <el-upload class="avatar-uploader" action="/ArticleWrite/UpLoadTitleImg" :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload" :drag="false" :data="Updata" :name="'titleImg'" :multiple="false">
+                    <img v-if="ArticleInfo.imageUrl" :src="ArticleInfo.imageUrl" class="avatar" style="width:180px;height:180px;">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+            </div>
+            <div>
+                <p><strong>文章类型：</strong></p>
+                <select class="form-control" v-model="BlogTypeChange.BlogTypeID">
+                    <option v-for="(item,index) in BlogTypeChange.BlogType" :key="index" :value="item.BlogTypeID" v-text="item.BlogTypeName"></option>
+                </select>
+            </div>
+            <div>
+                <p><strong>个人文章类型：</strong></p>
+                <select class="form-control" v-model="SingleTypeChange.SingleTypeID">
+                    <option value="0">不选择</option>
+                    <option v-for="(item,index) in SingleTypeChange.SingleType" :key="index" :value="item.SingleTypeID" v-text="item.SingTypeName"></option>
+                </select>
+            </div>
+            <div>
+                <p><strong>摘要：</strong></p>
+                <textarea class="form-control" v-model="ArticleInfo.Introduc"></textarea>
+            </div>
+            <p align="center"><br /><button class="btn btn-primary btn-sm" v-on:click="SaveArticle">保存</button></p>
+            <div class="notify bg-primary"><span style="padding-top:-50%;">设置信息并保存文章</span></div>
+        </div>
+
+        <div class="resource-edit-container">
+            <!--资源文件-->
+            <div id="resourceCtrl" class="border" v-on:dragenter="dragenter" v-on:dragover="dragover" v-on:drop="dropUp">
+                <span>
+                    <button class="btn btn-primary btn-xs">上传资源</button>
+                    <input type="file" multiple v-on:change="clickUpLoad" />
+                </span>
+                <span class="glyphicon glyphicon-trash remvoeResource" id="removeResource" v-on:dragenter="dragenter" v-on:dragover="dragover" v-on:drop="dropRemove"></span>
+                <ul class="resources">
+                    <li class="el-icon-tickets" draggable="true" v-for="(item,index) in files" :title="item.title" v-html="'&nbsp;'+item.title" v-on:dragstart="dragstart(item.title)"></li>
+                </ul>
+            </div><!--资源文件-->
+            <!--编辑区-->
+            <div id="editArea" class="border">
+                <div id="removeContainer">
+                    @Html.Raw(Model.WorksContent.GetContent())
+                </div>
+            </div> <!--编辑区-->
+
+        </div>
+        <script src="~/Scripts/Article/imgDateUrl.js"></script>
+        <script src="~/Scripts/Article/editor.js"></script>
+        <script>
+            window.addEventListener("load", function () {
+                var a = $("div.el-upload,div.el-upload--text");
+                $("div.el-upload,div.el-upload--text").css("width", "180px");
+                $("div.el-upload,div.el-upload--text").css("height", "180px");
+            });
+
+        </script>
+    </div>
+    </div>

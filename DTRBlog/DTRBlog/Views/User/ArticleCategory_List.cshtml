@@ -1,0 +1,148 @@
+﻿@model PagedList<DTRBlog.Model.BlogWorks>
+@{
+    ViewBag.Title = ViewBag.categoryName;
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+@section head{
+    <link href="~/Content/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/Content/layui/layui.all.js"></script>
+    <link href="~/Content/css/classify.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+}
+
+<div class="list-group page-header" style="margin-top:20px; ">
+    <div style="float:right;position:relative;color:#63b6e0;margin-right:17px;margin-bottom:-10px;">
+        <input type="hidden" value="" id="newsType" />
+        <a href="javascript:;" onclick="AddArticle()" style="position:absolute;bottom:-22px;right:0px;"class="btn btn-info a-Add"><i class=" layui-icon layui-icon-add-1"></i>添加文章</a>
+    </div>
+    <h4 style="color:#808080;font-size:16px;margin:10px;"><a href="@Url.Action("category","user")" class="clear-default">个人文章分类</a> <i class="layui-icon layui-icon-right"></i> @ViewBag.categoryName</h4>
+</div>
+@if (Model.Count != 0)
+{
+    <div class="row a-select">
+        <span class="remove-list " onclick="RemoveSelectList()" style="float:right;margin-right:17px;"><i class=" layui-icon layui-icon-delete"></i>移除勾选项</span>
+        @*<a href="javascript:;" style="float:right;margin-right:17px;" class="btn btn-info a-Add"><i class=" layui-icon layui-icon-add-1"></i>添加文章</a>*@
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <div style="padding:0px;">
+        <span class="selectAll">全选</span>
+        <span class="reverseSelect">反选</span>
+    </div>
+       
+    </div>
+    <div class="layui-upload-list">
+        <ul class="list-unstyled a-list">
+            @foreach (var item in Model)
+            {
+                <li class="page-header alist">
+                    <div style="float:right">
+                        <span>@item.PublishDate</span>
+                    </div>
+                    <div class="a-remove">
+                        <a href="javascript:;" onclick="RemoveArticleOfCate(@item.BlogWorksID,this)" class="clear-default"> <i class=" layui-icon layui-icon-delete"></i></a>
+                    </div>
+
+                    <div>
+                        <input class="singleSelect" value="@item.BlogWorksID" name="" type="checkbox">
+                        @Html.RouteLink(item.Title, "Details", new { BlogId = Session["BlogID"], id = item.BlogWorksID }, new { target = "_blank" })
+
+                        @*<a target="_blank" href="#">@item.Title</a>*@
+                    </div>
+
+                </li>
+            }
+        </ul>
+    </div>
+}
+else {
+<div style="color:#808080;font-size:17px;width:156px;margin:190px auto;">
+    该分类下什么也没有
+</div>
+}
+<div class=" row page-footer">
+    @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+</div>
+<script>
+    function AddArticle() {
+         layer.open({
+                type: 2,
+                title: '添加文章',
+                maxmin: true,
+                shadeClose: true, //点击遮罩关闭层
+                area: ['570px', '390px'],
+                content: '@Url.Action("AddCategoryArticle","user",new {cateId= ViewBag.categoryId})'
+         });
+    }
+    function RemoveArticleOfCate(aId, obj) {
+
+        layer.confirm('确认移除？', {
+            btn: ['确认', '取消']
+        }, function () {
+              $.ajax({
+                    url: '@Url.Action("UpdateArticleToCate","user")',
+                    data: { articleId: aId },
+                    success: function (data) {
+                        if (data.code == 1) {
+                            layer.msg(data.message, { icon: 1 });
+                            $(obj).parent().parent("li.alist").remove();
+                            return;
+                        }
+                        layer.msg(data.message, { icon: 1 });
+                    }
+              })
+        });
+
+    }
+    function RemoveSelectList() {
+        var idBulder = '';
+        $(".singleSelect").each(function () {
+            if ($(this)[0].checked) {
+                idBulder += $(this).val() + ',';
+            }
+        });
+        if (!idBulder) {
+            layer.msg("请至少勾选一个");
+            return false;
+        }
+        console.log(idBulder);
+           layer.confirm('确认移除？', {
+               btn: ['确认', '取消']
+           }, function () {
+                   $.ajax({
+                       url: '@Url.Action("MultUpdateCateOfArticle","user")',
+                       data: { articleId: idBulder },
+                       success: function (data) {
+                           if (data.code == 1) {
+                               layer.msg(data.message, { icon: 1 });
+                               window.location.reload();
+                               return;
+                           }
+                           layer.msg(data.message, { icon: 1 });
+                       }
+
+                   });
+           });
+
+    }
+    var i = 0;
+    $(".selectAll").on("click", function () {
+        if (i == 0) {
+            $("ul.a-list li input.singleSelect").prop("checked", true);
+            i = 1;
+        } else {
+            $("ul.a-list li input.singleSelect").prop("checked", false);
+            i = 0;
+        }
+
+        $(".reverseSelect").on("click", function () {
+            $("ul.a-list li input.singleSelect").each(function () {
+                $(this).prop("checked", !$(this).prop("checked"));
+            })
+
+        })
+
+    })
+
+
+</script>
+

@@ -1,0 +1,10 @@
+﻿@using DTR.DAL
+@model List<DTR.DAL.BlogType>
+
+@foreach (var item in Model)
+{
+  
+    <li><a href="/home/BlogInfo/@item.BlogTypeID">@item.BlogTypeName</a></li>
+}
+
+

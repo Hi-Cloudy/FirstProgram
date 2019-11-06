@@ -1,0 +1,206 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Layout</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <base target="_parent" />
+    <link type="text/css" rel="stylesheet" href="/Content/static/css/player.css">
+    <link href="/Content/static/css/base.css" rel="stylesheet">
+    <link href="/Content/static/css/m.css" rel="stylesheet">
+    <link rel="stylesheet" href="/Content/static/css/swiper.min.css">
+    <link href="~/Content/plugin/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/static/css/font.css" rel="stylesheet" />
+    <style>
+        ul#w li a {
+            text-align: left;
+            margin-left: 28px;
+        }
+
+        ul#w li i {
+            margin-right: 15px;
+        }
+
+        body {
+            background-color: rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <input type="hidden" id="DTR-LoginUrl" value="/Home/Login" />
+    <input type="hidden" id="DTR-RegisterUrl" value="/Home/Register" />
+    <!-- 内容 -->
+    <header>
+        <div class="logo-section box">
+            @*搜索*@
+
+            <div class="search" style="margin-top:18px;">
+                <form action="/e/search/index.php" method="post" name="searchform" id="searchform">
+                    <input name="keyboard" id="keyboard" class="input_text k" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+                    <input name="show" value="title" type="hidden">
+                    <input name="tempid" value="1" type="hidden">
+                    <input name="tbname" value="news" type="hidden">
+                    <input name="Submit" class="input_submit" value="搜索" type="submit">
+                </form>
+            </div>
+            <div class="logo">
+                <a href="/">
+                    <img src="/Content/images/logo.png">    <div id="kx">追梦博客</div> @* <h2  class="logo-title">追梦博客</h2>*@
+                    <p class="logo-text" style="width:550px;">生命总是在追梦，追求最遥远的地方，追求内心真心想要的地方。</p>
+                </a>
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="topnav">
+            <h2><a href="/">胜于蓝</a></h2>
+            <nav>
+                <ul id="starlist">
+                    <li><a href="/">网站首页</a></li>
+                    <li class="menu">
+                        <a href="/home/BlogInfo">文章分类</a>
+                        <ul id="test" class="sub">
+                            @Html.Action("showType", "home")
+                        </ul>
+                        <span></span>
+                    </li>
+                    <li class="menu">
+                        <a href="/#dtr-hblog">热门博客</a>
+                        <span></span>
+                    </li>
+                    <li><a href="/#dtr-lanmu">栏目推荐</a></li>
+                    <li class="menu">
+                        <a href="/#dtr-newblog">最新博文</a>
+                        <span></span>
+                    </li>
+
+                    <li><a href="/#dtr-hbuser">热门博主</a></li>
+
+                    <li class="menu">
+                        <a href="/#ulike">猜你喜欢</a>
+                        <span></span>
+                    </li>
+                    @{
+                        if (Session["BlogID"] == null)
+                        {
+                            <li style="margin-left:210px;">
+                                <a id="DTR-Login" href="javascript:;" style="float: none; padding-right: 0; ">登录</a>
+                            </li>
+                            <li>
+                                /
+                            </li>
+
+                            <li>
+                                <a id="DTR-Register" href="javascript:;" style="float: none; padding-left: 0; ">注册</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <i class="fa fa-pencil-square-o" style="padding-left: 20px;"></i>
+                                <a href="/articley/articleWrite" style="float: none; padding-left: 0; ">写博客</a>
+                            </li>
+                            <li>
+                                <i class="fa fa-envelope-o" style="padding-left: 20px;"></i>
+                                <a href="/msg/comment" style="float: none; padding-left: 0; padding-right: 5px;">消息<span style="float: right; margin-top: 10px; color: white;background:red;padding:0 4px; border-radius: 25%; font-size: 9px; line-height: normal;" id="dtr-myallcount">@Html.Action("GetAllNewsCount", "msg")</span></a>
+                                @*<ul class="sub">
+                                        <li><a href="/download/chat/">评论</a></li>
+                                        <li><a href="/download/ftp/">关注</a></li>
+                                        <li><a href="/download/soft/">点赞</a></li>
+                                        <li><a href="/download/jQuery/">回答</a></li>
+                                        <li><a href="/download/html/">系统通知</a></li>
+                                    </ul>*@<span></span>
+                            </li>
+                            <li class="menu">
+                                <a href="/perB/PB">
+                                    <img src="/perB/GetUserHead" class="round_icon" />
+                                    <i class="fa fa-angle-down"></i>
+                                </a>
+                                <ul id="w" class="sub" style="width:150px; ">
+                                    <li><a href="/user/follow"><i class="fa fa-lightbulb-o"></i>我的关注</a></li>
+                                    <li><a href="/user/collection"><i class="fa fa-bookmark-o"></i>我的收藏</a></li>
+                                    <li><a href="/perB/PB"><i class="fa fa-user-o"></i>个人中心</a></li>
+                                    <li><a href="/user/fans"><i class="fa fa-cog "></i>我的粉丝</a></li>
+                                    <li><a href="/@Session["BlogID"]"><i class="fa fa-address-book-o "></i>我的博客主页</a></li>
+                                    <li><a href="/Home/SingOut"><i class="fa fa-sign-in "></i>退出</a></li>
+                                </ul><span></span>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+            <h2 id="mnavh"><span class="navicon"></span></h2>
+        </div>
+        <div class="is-search">
+            <section><i></i>请输入关键字词</section>
+        </div>
+        <div class="search-page">
+            <div class="go-left"></div>
+            <div class="search">
+                <form action="/e/search/index.php" method="post" name="searchform" id="searchform">
+                    <input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+                    <input name="show" value="title" type="hidden">
+                    <input name="tempid" value="1" type="hidden">
+                    <input name="tbname" value="news" type="hidden">
+                    <input name="Submit" class="input_submit" value="搜索" type="submit">
+                </form>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </header>
+
+    <script src="/Content/static/js/jquery-1.8.3.min.js"></script>
+    <script src="/Content/static/js/main.js"></script>
+</body>
+</html>
+<script>
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '/Home/showType',
+        success: function (data) {
+            alert(data);
+        }
+    });
+
+    //动态伸缩iframe
+    document.onmousemove = function (e) {
+        var height = document.body.scrollHeight;
+        if (height <= 165)
+            return;
+        var iframe = top.document.getElementById("DTR-nav");
+        iframe.style.height = height + "px";
+    }
+    document.onmouseout = function (e) {
+        var iframe = top.document.getElementById("DTR-nav");
+        iframe.style.height = document.body.scrollHeight + "px";
+    };
+    //登录跳转
+    var logHref = document.getElementById("DTR-Login") || null;
+    var reHref = document.getElementById("DTR-Register") || null;
+    if (logHref)
+        logHref.addEventListener("click", function () {
+
+            var localUrl = self.location.href;
+            var currentUrlLastIndex = localUrl.lastIndexOf("currentUrl=");
+            var currentUrl = localUrl.substring(currentUrlLastIndex)
+
+            var logUrl = document.getElementById("DTR-LoginUrl").value;
+            top.location.href = logUrl + "?" + currentUrl;
+        });
+
+    if (reHref)
+        reHref.addEventListener("click", function () {
+
+            var localUrl = self.location.href;
+            var currentUrlLastIndex = localUrl.lastIndexOf("currentUrl=");
+            var currentUrl = localUrl.substring(currentUrlLastIndex)
+            var logUrl = document.getElementById("DTR-RegisterUrl").value;
+            top.location.href = logUrl + "?" + currentUrl;
+        })
+</script>

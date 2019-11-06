@@ -1,0 +1,116 @@
+
+.user {
+    padding: 5px;
+    height: 130px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-pic img {
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 5px auto;
+    border-radius: 100%;
+}
+
+.user-name, .user-pic {
+    padding: 8px;
+}
+
+    .user-name font {
+        display:inline-block;
+        width:110px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+.divHeight {
+    width: 100%;
+    height: 10px;
+    background: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+}
+.my-icon {
+    float: right;
+}
+.my-icon {
+    text-align: right;
+    color: #394154;
+    padding-right: 12px;
+    position: relative;
+    font-size: 1rem;
+}
+    .my-icon::after {
+        content: " ";
+        display: inline-block;
+        height: 8px;
+        width: 8px;
+        border-width: 2px 2px 0 0;
+        border-color: #337ab7;
+        border-style: solid;
+        -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+        transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+        position: relative;
+        top: -2px;
+        position: absolute;
+        top: 70%;
+        margin-top: 5px;
+        right: 2px;
+        border-radius: 1px;
+    }
+
+.active .my-icon::after {
+    border-color:#fff;
+}
+ul#bootstrappager {
+    float: right;
+    margin-bottom: 10px;
+}
+.a-right, a-remove {
+    float: right;
+}
+.a-list>li {
+ 
+    padding-bottom:16px;
+}
+    .a-list > li a {  
+        font-size:15px;
+        color: #337ab7;
+    }
+.a-select span {
+    color:#337ab7;
+    cursor:pointer;
+    margin:7px;
+    padding:6px;
+    border:1px solid #aac0d7;
+    border-radius:3px;
+}
+.a-select {
+
+}
+.a-select span:hover {
+    background-color: #ebebeb;
+    cursor:pointer;
+}
+.a-remove {
+    float: right;
+    font-size: small;
+    margin-top: 2px;
+    margin-right: 17px;
+    margin-bottom: -5px;
+    display: none;
+    text-decoration: none;
+}
+.a-list li:hover .a-remove {
+    display: block;
+    text-decoration:none;
+}
+.clear-default {
+    text-decoration:none;
+
+}
+    .clear-default:hover {
+        text-decoration: none;
+    }

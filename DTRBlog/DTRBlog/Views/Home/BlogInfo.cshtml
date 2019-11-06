@@ -1,0 +1,172 @@
+﻿
+@{
+    ViewBag.Title = "BlogInfo";
+    Layout = "~/Views/Shared/HomeMaster.cshtml";
+}
+@using DTR.DAL
+@using DTR.DATAConfig
+@model PagedList<DTRBlog.Models.SearchArticleViewModel>
+
+@section head{
+    <title>飞猪Blog</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+
+    <link href="~/Content/static1/css/index.css" rel="stylesheet" />
+    <link href="~/Content/static1/css/m.css" rel="stylesheet" />
+    <link href="~/Content/static1/css/font-awesome.min.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        //全局变量
+        var GV = {
+            ROOT: "/",
+            WEB_ROOT: "/",
+            JS_ROOT: "static/js/"
+        };
+
+
+
+    </script>
+    <script src="/static/js/wind.js"></script>
+    <style>
+        body {
+            background-color: white;
+        }
+
+        ul.article-list-ul {
+            /*background-color:white;*/
+        }
+
+        div.blank {
+            height: 0;
+        }
+
+        p.logo-text {
+            font-size: 15px;
+        }
+
+        .article-list .article-list-ul li {
+            border-bottom: 1px dashed #d5d4d4;
+        }
+    </style>
+}
+
+    <!--导航end-->
+    <div class="w1190 mt">
+        <div class="article-list index-article-list fl">
+            <ul class="article-list-ul">
+                @{
+                    string href = null;
+                    foreach (var item in Model)
+                    {
+
+                        href = "/" + item.Article.BlogID + "/Article/" + item.Article.BlogWorksID;
+
+                        string query = "?query=" + new Random().Next(1, 10000000).ToString();
+
+                        <li>
+                            <a href="@href" class="img fl oh">
+                                <img style="height:100px;" src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath+item.Article.WorksPath+DATAPathConfigs.WorksFace+query)" class="img-responsive" />
+                            </a>
+                            <div class="list-main-text">
+                                <h3 class="title">
+                                    <a class="" href="@href">@Html.Raw(item.Title)</a>
+                                </h3>
+                                <p class="con" title="@Html.Raw(item.SubTitle)">@Html.Raw(item.SubTitle)</p>
+                                <div class="autor">
+                                    @if (item.Article.BlogTypeID != null)
+                                    {
+                                        <span class="lm fl">
+                                            <i class="fa fa-tags"></i>
+                                            <a class="classname">@(item.Article.BlogType.BlogTypeName)</a>
+                                        </span>
+                                    }
+                                    <span class="dtime fl" title="时间"><i class="fa fa-clock-o"></i>@item.Article.PublishDate</span>
+                                    <span class="viewnum fl" title="评论"><i class="fa fa-commenting-o"></i>评论（@item.Article.BlogComment.Count()）</span>
+                                    <a class="nmore fr" href="@href">阅读更多</a>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                    }
+
+
+                    if (Model.Count() == 0)
+                    {
+                        <li style="color:#808080;font-size:17px;width:140px;margin:190px auto;border:none">
+                           目前没有结果
+                        </li>
+                    }
+
+                }
+            </ul>
+      
+
+            @Html.Pager(Model,new PagerOptions { PageIndexParameterName = "pageIndex",
+           ContainerTagName = "ul", CssClass = "pagination",
+           CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>",
+           DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>",
+           PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager"
+       })
+
+
+        </div>
+        <!--右边-->
+        <div class="rbox fr">
+            <div class="whitebg paihang">
+                <h2 class="htitle">点击排行</h2>
+                <ul>
+                    @{
+                        List<BlogWorks> list = ViewData["key"] as List<BlogWorks>;
+                        foreach (var item in list)
+                        {
+                            <li>
+                                <i></i>
+                                <a href="/@item.BlogID/Article/@item.BlogWorksID">@item.Title</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="whitebg tuijian">
+                <h2 class="htitle">推荐</h2>
+                <ul>
+                    @{
+                        List<BlogWorks> list3 = ViewData["key3"] as List<BlogWorks>;
+                        foreach (var item in list3)
+                        {
+                              string query = "?query=" + new Random().Next(1, 10000000).ToString();
+                            <li>
+                                <a href="/@item.BlogID/Article/@item.BlogWorksID">
+                                    <i>
+                                        <img src="@(DATAPathConfigs.DTRDataConfigNetWorkelPath+item.WorksPath+DATAPathConfigs.WorksFace+query)" class="img-responsive" alt="@item.Title" />
+                                    </i>
+                                    <p>@item.Title</p>
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <script>
+        $.ajax({
+            type: "post",
+            url: "/Home/BlogInfo",
+            data: [
+
+            ],
+
+        });
+    </script>
+
+
+
+
+

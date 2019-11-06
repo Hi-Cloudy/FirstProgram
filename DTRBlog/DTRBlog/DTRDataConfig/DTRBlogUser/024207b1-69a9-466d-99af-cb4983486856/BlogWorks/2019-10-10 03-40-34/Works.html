@@ -1,0 +1,683 @@
+
+                    
+                <div><div><h2>Reactivity</h2>
+<p>点开它的Readme，通过Google翻译，我们能明白它的大致意思是：</p>
+<blockquote>
+<p>这个包会内嵌到vue的渲染器中(@vue/runtime-dom)。不过它也可以单独发布且被第三方引用（不依赖vue）。但是呢，你们也别瞎用，如果你们的渲染器是暴露给框架使用者的，它可能已经内置了一套响应机制，这跟咱们的reactivity是完全的两套，不一定兼容的（说的就是你，react-dom）。</p>
+<p>关于它的api呢，大家就先看看源码或者看看types吧。注意：除了  <code>Map</code> , <code>WeakMap</code> , <code>Set</code>&nbsp;and <code>WeakSet</code>&nbsp;外，内置的一些对象是不能被观测的（例如： <code>Date</code>&nbsp;， <code>RegExp</code>&nbsp;等）。</p>
+</blockquote>
+<p>唔，单根据Readme，无法清晰的知道，它具体是怎么样的。毕竟也是alpha版。那我们还是听它的，直接撸源码吧。</p>
+<p><a name="8Pqmb"></a></p>
+<h2>一刷源码，一脸懵逼</h2>
+<p>从reactivity的入口文件进去，发现它只是暴露了6个文件内的apis。分别是： <code>ref</code>&nbsp;、<code>reactive</code>&nbsp;、<code>computed</code>&nbsp;、<code>effect</code>&nbsp;、<code>lock</code>&nbsp;、<code>operations</code>&nbsp;。其中 <code>lock</code>&nbsp;跟 <code>operations</code>&nbsp;很简单， <code>lock</code>&nbsp;文件内部就是两个控制锁开关变量的方法， <code>operations</code>&nbsp;内部就是对数据操作的类型的枚举。</p>
+<p>所以reactivity的重点就在<code>ref</code>&nbsp;、<code>reactive</code>&nbsp;、<code>computed</code>&nbsp;、<code>effect</code>&nbsp;这四个文件，但这四个文件就没这么简单了。我花了半天，从头到尾的撸了一遍，发现每个字母我都认识；每个单词，借助google，我也都知道；基本所有的表达式，我这半吊子的TypeScript水平也都能理解。但是，当它们组成一个个函数的时候，我就有点儿懵逼了.....<code>ref</code>&nbsp;里引了 <code>reactive</code>&nbsp;， <code>reactive</code>&nbsp;里又引用了 <code>ref</code>&nbsp;，再加上函数内部一下奇奇怪怪的操作，绕两下便迷糊了。</p>
+<p>我总结了下，很大原因是我不知道这几个关键的api，到底是要做啥。源码我不懂、api的含义我也不懂。我们知道，单个二元一次方程，是求不出解的。</p>
+<p>那怎么办呢？其实还有一个方程，那就是单测。从单测开始读，是一个极好的阅读源码的办法。不仅能快速知道api的含义跟用法，还能知道很多边界情况。在阅读的过程中，还会想，如果是自己的话，会怎么去实现，后续能加深对源码的认识跟学习。</p>
+<p><a name="fUDzr"></a></p>
+<h2>从单测着手</h2>
+<p>因为我小撸了下源码，所以大致能知道的阅读顺序。当然，根据代码行数，我们也能估摸个大致顺序。这里我就直接给结论，建议阅读顺序：reactive -&gt; ref -&gt; &nbsp;effect -&gt; computed -&gt;&nbsp;readonly -&gt;&nbsp;collections</p>
+<p><a name="Lowf2"></a></p>
+<h3>Reactive</h3>
+<p><code>reactive</code>&nbsp;顾名思义，响应式，意味着 <code>reactive</code>&nbsp;数据是响应式数据，从名字上就说明了它是本库的核心。那我们先来看看它有什么样的能力。</p>
+<p><strong>第一个单测：</strong></p>
+<pre><code lang="typescript">test('Object', () =&gt; {
+  const original = { foo: 1 }
+  const observed = reactive(original)
+  expect(observed).not.toBe(original)
+  expect(isReactive(observed)).toBe(true)
+  expect(isReactive(original)).toBe(false)
+  // get
+  expect(observed.foo).toBe(1)
+  // has
+  expect('foo' in observed).toBe(true)
+  // ownKeys
+  expect(Object.keys(observed)).toEqual(['foo'])
+})
+复制代码</code></pre><p>看着好像没啥，就是向 <code>reactive</code>&nbsp;传递一个对象，会返回一个新对象，两个对象类型一致，数据长得一致，但引用不同。那我们顿时就明白了，这肯定是利用了<a target="_blank" href="https://link.juejin.im?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FProxy" rel="nofollow noopener noreferrer"><strong>Proxy</strong></a>！vue@3响应式系统核心中的核心。</p>
+<p>那我们再看下&nbsp;<code>reactive</code>&nbsp;的声明：</p>
+<p></p><figure><br><figcaption></figcaption></figure><p></p>
+<p>说明 <code>reactive</code>&nbsp;只接受对象数据，返回的是一个 <code>UnwrapNestedRefs</code>&nbsp;数据类型，但它到底是个啥，也不知道，以后再说。</p>
+<p><strong>第二个单测：</strong></p>
+<pre><code lang="typescript">test('Array', () =&gt; {
+  const original: any[] = [{ foo: 1 }]
+  const observed = reactive(original)
+  expect(observed).not.toBe(original)
+  expect(isReactive(observed)).toBe(true)
+  expect(isReactive(original)).toBe(false)
+  expect(isReactive(observed[0])).toBe(true)
+  // get
+  expect(observed[0].foo).toBe(1)
+  // has
+  expect(0 in observed).toBe(true)
+  // ownKeys
+  expect(Object.keys(observed)).toEqual(['0'])
+})
+复制代码</code></pre><p><code>reactive</code>&nbsp;接收了一个数组(数组自然也是object)，返回的新数组，不全等于原数组，但数据一致。跟单测一中的对象情况表现一致。不过这个单测没考虑嵌套的，我补充一下</p>
+<pre><code lang="typescript">test('Array', () =&gt; {
+  const original: any[] = [{ foo: 1, a: { b: { c: 1 } }, arr: [{ d: {} }] }]
+  const observed = reactive(original)
+  expect(observed).not.toBe(original)
+  expect(isReactive(observed)).toBe(true)
+  expect(isReactive(original)).toBe(false)
+  expect(isReactive(observed[0])).toBe(true)
+  // observed.a.b 是reactive
+  expect(isReactive(observed[0].a.b)).toBe(true)
+  // observed[0].arr[0].d 是reactive
+  expect(isReactive(observed[0].arr[0].d)).toBe(true)
+  // get
+  expect(observed[0].foo).toBe(1)
+  // has
+  expect(0 in observed).toBe(true)
+  // ownKeys
+  expect(Object.keys(observed)).toEqual(['0'])
+})
+复制代码</code></pre><p>说明返回的新数据，只要属性值还是个object，就依旧 <code>isReactive</code>&nbsp;。</p>
+<p>第三个单测，没啥好讲的，第四个单测，测试嵌套对象，在我第二个单测的补充中已经覆盖了。</p>
+<p><strong>第五个单测：</strong></p>
+<pre><code lang="typescript">test('observed value should proxy mutations to original (Object)', () =&gt; {
+  const original: any = { foo: 1 }
+  const observed = reactive(original)
+  // set
+  observed.bar = 1
+  expect(observed.bar).toBe(1)
+  expect(original.bar).toBe(1)
+  // delete
+  delete observed.foo
+  expect('foo' in observed).toBe(false)
+  expect('foo' in original).toBe(false)
+})
+复制代码</code></pre><p>**<br>在这个单测中，我们终于见识到“<strong>响应式</strong>”。通过 <code>reactive</code>&nbsp;执行后返回的响应数据，对其做任何写/删操作，都能同步地同步到原始数据。那如果反过来，直接更改原始数据呢？</p>
+<pre><code lang="typescript">test('observed value should proxy mutations to original (Object)', () =&gt; {
+  let original: any = { foo: 1 }
+  const observed = reactive(original)
+  // set
+  original.bar = 1
+  expect(observed.bar).toBe(1)
+  expect(original.bar).toBe(1)
+  // delete
+  delete original.foo
+  expect('foo' in observed).toBe(false)
+  expect('foo' in original).toBe(false)
+})
+复制代码</code></pre><p>我们发现直接修改原始数据，响应数据也能获取的最新数据。</p>
+<p><strong>第六个单测</strong></p>
+<pre><code lang="typescript">test('observed value should proxy mutations to original (Array)', () =&gt; {
+  const original: any[] = [{ foo: 1 }, { bar: 2 }]
+  const observed = reactive(original)
+  // set
+  const value = { baz: 3 }
+  const reactiveValue = reactive(value)
+  observed[0] = value
+  expect(observed[0]).toBe(reactiveValue)
+  expect(original[0]).toBe(value)
+  // delete
+  delete observed[0]
+  expect(observed[0]).toBeUndefined()
+  expect(original[0]).toBeUndefined()
+  // mutating methods
+  observed.push(value)
+  expect(observed[2]).toBe(reactiveValue)
+  expect(original[2]).toBe(value)
+})
+复制代码</code></pre><p>第六个单测证明了通过 <code>Proxy</code>&nbsp;实现响应式数据的巨大好处之一：可以劫持数组的所有数据变更。还记得在vue@2中，需要手动set数组吗？在vue@3中，终于不用做一些奇奇怪怪的操作，安安心心的更新数组了。</p>
+<p><strong>第七个单测：</strong></p>
+<pre><code lang="typescript">test('setting a property with an unobserved value should wrap with reactive', () =&gt; {
+  const observed: any = reactive({})
+  const raw = {}
+  observed.foo = raw
+  expect(observed.foo).not.toBe(raw)
+  expect(isReactive(observed.foo)).toBe(true)
+})
+复制代码</code></pre><p>又要敲黑板了，这是通过 <code>Proxy</code>&nbsp;实现响应式数据的巨大好处之二。在vue@2中，响应式数据必须一开始就声明好key，如果一开始不存在此属性值，也必须先设置一个默认值。通过现在这套技术方案，vue@3的响应式数据的属性值终于可以随时添加删除了。</p>
+<p><strong>第八、九个单测</strong></p>
+<pre><code lang="typescript">test('observing already observed value should return same Proxy', () =&gt; {
+  const original = { foo: 1 }
+  const observed = reactive(original)
+  const observed2 = reactive(observed)
+  expect(observed2).toBe(observed)
+})
+
+test('observing the same value multiple times should return same Proxy', () =&gt; {
+  const original = { foo: 1 }
+  const observed = reactive(original)
+  const observed2 = reactive(original)
+  expect(observed2).toBe(observed)
+})
+复制代码</code></pre><p>这两个单测说明了，对于同一个原始数据，执行多次 <code>reactive</code>&nbsp;或者嵌套执行 <code>reactive</code>&nbsp;,返回的结果都是同一个相应数据。说明 <code>reactive</code>&nbsp;文件内维持了一个缓存，以原始数据为key，以其响应数据为value，若该key已存在value，则直接返回value。那js基础OK的同学应该知道，通过 <a target="_blank" href="https://link.juejin.im?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FJavaScript%2FReference%2FGlobal_Objects%2FWeakMap" rel="nofollow noopener noreferrer"><strong><code>WeakMap</code></strong></a>&nbsp;即可实现这样的结果。</p>
+<p><strong>第十个单测</strong></p>
+<pre><code lang="typescript">test('unwrap', () =&gt; {
+  const original = { foo: 1 }
+  const observed = reactive(original)
+  expect(toRaw(observed)).toBe(original)
+  expect(toRaw(original)).toBe(original)
+})
+复制代码</code></pre><p>通过这个单测，了解了 <code>toRaw</code>&nbsp;这个api，可以通过响应数据获取原始数据。那说明 <code>reactive</code>&nbsp;文件内还需要维持另外一个 <code>WeakMap</code>&nbsp;做反向映射。</p>
+<p><strong>第十一个单测</strong>，不贴代码了，本单测列举了不可成为响应数据的数据类型，即JS五种基本数据类型+ <code>Symbol</code>&nbsp;（经本人测试，函数也不支持）。而对于内置一些的特殊类型，如&nbsp;<code>Promise</code>&nbsp;、<code>RegExp</code>&nbsp;、<code>Date</code>&nbsp;，这三个类型的数据传递给 <code>reactive</code>&nbsp;时不会报错，会直接返回原始数据。</p>
+<p><strong>最后一个单测</strong></p>
+<pre><code lang="typescript">test('markNonReactive', () =&gt; {
+  const obj = reactive({
+    foo: { a: 1 },
+    bar: markNonReactive({ b: 2 })
+  })
+  expect(isReactive(obj.foo)).toBe(true)
+  expect(isReactive(obj.bar)).toBe(false)
+})
+复制代码</code></pre><p>这里引用了一个api-&nbsp;<code>markNonReactive</code>&nbsp;，通过此api包裹的对象数据，不会成为响应式数据。这个api真实业务中应该使用比较少，做某些特殊的性能优化时可能会使用到。</p>
+<p>看完单测以后，我们对 <code>reactive</code>&nbsp;有了一定认识：它能接受一个对象或数组，返回新的响应数据。响应数据跟原始数据就跟影子一样，对任何一方的任何操作都能同步到对方身上。</p>
+<p>但这...好像没什么厉害之处。但从单测的表现来说，就是基于Proxy，做了一些边界跟嵌套上的处理。那这就引出了一个非常关键的问题：**在vue@3中，它是如何通知视图更新的？或者说，当响应数据变更时，它是如何通知它的使用方，要做一些操作的？**这些行为肯定是封装在Proxy的set/get等各类handler中。但目前还不知道，只能先继续往下看其他单测啦。</p>
+<p>由于最开始，我们就知道了，&nbsp;<code>reactive</code>&nbsp;的返回值是个 <code>UnwrapNestedRefs</code>&nbsp;类型，乍一看是一种特殊的 <code>Ref</code>&nbsp;类型，那咱们就继续看看&nbsp;<code>ref</code>&nbsp;。（实际上这个UnwrapNestedRefs是为了获取嵌套Ref的泛型的类型，记住这个Unwrap是一个动词，这有点儿绕，以后讲源码解析时再阐述）</p>
+<p><a name="YwT2E"></a></p>
+<h3>Ref</h3>
+<p><strong>那先看ref的第一个单测：</strong></p>
+<pre><code lang="typescript">it('should hold a value', () =&gt; {
+  const a = ref(1)
+  expect(a.value).toBe(1)
+  a.value = 2
+  expect(a.value).toBe(2)
+})
+复制代码</code></pre><p>那我们先看下 <code>ref</code>&nbsp;函数的声明，传递任何数据，能返回一个 <code>Ref</code>&nbsp;数据。<br></p><figure><img alt="image.png" src="https://user-gold-cdn.xitu.io/2019/10/8/16dabb9d5047e3dc?imageView2/0/w/1280/h/960/format/webp/ignore-error/1"><figcaption></figcaption></figure><figure><br><figcaption></figcaption></figure><p></p>
+<p>而 <code>Ref</code>&nbsp;数据的value值的类型不正是 <code>reactive</code>&nbsp;函数的返回类型吗。只是 <code>reactive</code>&nbsp;必须要求泛型继承于对象（在js中就是 <code>reactive</code>&nbsp;传参需要是object），而&nbsp;<code>Ref</code>&nbsp;数据没有限制。也就是说， <code>Ref</code>&nbsp;类型是基于 <code>Reactive</code>&nbsp;数据的一种特殊数据类型，除了支持object外，还支持其他数据类型。</p>
+<p>回到单测中，我们能看到，传递 <code>ref</code>&nbsp;函数一个数字，也能返回一个 <code>Ref</code>&nbsp;对象，其value值为当时传递的数字值，且<strong>允许修改</strong>这个value。</p>
+<p><strong>再看第二个单测：</strong></p>
+<pre><code lang="typescript">it('should be reactive', () =&gt; {
+  const a = ref(1)
+  let dummy
+  effect(() =&gt; {
+    dummy = a.value
+  })
+  expect(dummy).toBe(1)
+  a.value = 2
+  expect(dummy).toBe(2)
+})
+复制代码</code></pre><p>这个单测更有信息量了，突然多了个 <code>effect</code>&nbsp;概念。先不管它是啥，反正给effect传递了一个函数，其内部做了一个赋值操作，将 <code>ref</code>&nbsp;函数返回结果的value(a.value)赋值给dummy。然后这个函数会默认先执行一次，使得dummy变为1。而当a.value变化时，这个effect函数会重新执行，使得dummy变成最新的value值。</p>
+<p>也就是说，<strong>如果向effect传递一个方法，会立即执行一次，每当其内部依赖的ref数据发生变更时，会重新执行</strong>。这就解开了之前阅读&nbsp;<code>reactive</code>&nbsp;时的疑惑：当响应数据变化时，如何通知其使用方？很明显，就是通过effect。每当 <code>reactive</code>&nbsp;数据变化时，触发依赖其的effect方法执行。</p>
+<p>感觉这也不难实现，那如果是我的话，应该会这么做：</p>
+<ol>
+<li>首先需要维持一个effects的二维Map；</li>
+<li>向 <code>effect</code>&nbsp;函数传递一个响应函数；</li>
+<li>这个响应函数会立即执行一次，若其内部引用了响应数据，由于这些数据已经被我通过Proxy劫持了set/get，所以可据此收集此函数的依赖，更新effects二维Map</li>
+<li>后续任意的ref数据变更(触发set)时，检查二维Map，找到相应的effect，触发他们执行。</li>
+</ol>
+<p>但有一个麻烦之处是， <code>ref</code>&nbsp;函数也支持非对象数据，而Proxy仅支持对象。所以在本库&nbsp;<code>reactivity</code>&nbsp;中针对非对象数据会进行一层对象化的包装，再通过.value去取值。</p>
+<p><strong>再看第三个单测：</strong></p>
+<pre><code lang="typescript">it('should make nested properties reactive', () =&gt; {
+  const a = ref({
+    count: 1
+  })
+  let dummy
+  effect(() =&gt; {
+    dummy = a.value.count
+  })
+  expect(dummy).toBe(1)
+  a.value.count = 2
+  expect(dummy).toBe(2)
+})
+复制代码</code></pre><p>传递给ref函数的原始数据变成了对象，对其代理数据的操作，也会触发effect执行。看完以后我就先产生了几个好奇：</p>
+<ol>
+<li>如果再嵌套一层呢？</li>
+<li>因为原始数据是个对象，如果我直接修改原始数据，会同步到代理数据吗？</li>
+<li>直接修改原数据，会触发effect吗？</li>
+</ol>
+<p>于是我假使1.可以嵌套，2. 会同步，3.不会触发effect。改造了下单测，变成了：</p>
+<pre><code lang="typescript">it('should make nested properties reactive', () =&gt; {
+    const origin = {
+      count: 1,
+      b: {
+        count: 1
+      }
+    }
+    const a = ref(origin)
+    // 声明两个变量，dummy跟踪a.value.count,dummyB跟踪a.value.b.count
+    let dummy, dummyB
+    effect(() =&gt; {
+      dummy = a.value.count
+    })
+    effect(() =&gt; {
+      dummyB = a.value.b.count
+    })
+    expect(dummy).toBe(1)
+  	// 修改代理数据的第一层数据
+    a.value.count = 2
+    expect(dummy).toBe(2)
+
+  	// 修改代理对象的嵌套数据
+    expect(dummyB).toBe(1)
+    a.value.b.count = 2
+    expect(dummyB).toBe(2)
+
+  	// 修改原始数据的第一层数据
+    origin.count = 10
+    expect(a.value.count).toBe(10)
+    expect(dummy).toBe(2)
+  	// 修改原始数据的嵌套数据
+    origin.b.count = 10
+    expect(a.value.b.count).toBe(10)
+    expect(dummyB).toBe(2)
+  })
+复制代码</code></pre><p>结果如我所料（其实最初是我试出来的，只是为了写文章顺畅写的如我所料）：</p>
+<ol>
+<li>无论对象如何嵌套，修改代理数据，都能触发依赖其的effect</li>
+<li>修改原始数据，代理数据get新数据时能同步，但不会触发依赖其代理数据的effect。</li>
+</ol>
+<p>所以我们能得出一个结论：**对于&nbsp;**<code>**Ref**</code>&nbsp;**数据的更新，会触发依赖其的effect的执行。**那 <code>Reactive</code>&nbsp;数据呢？我们继续往下看。</p>
+<p><strong>第四个单测</strong></p>
+<pre><code lang="typescript">it('should work like a normal property when nested in a reactive object', () =&gt; {
+  const a = ref(1)
+  const obj = reactive({
+    a,
+    b: {
+      c: a,
+      d: [a]
+    }
+  })
+  let dummy1
+  let dummy2
+  let dummy3
+  effect(() =&gt; {
+    dummy1 = obj.a
+    dummy2 = obj.b.c
+    dummy3 = obj.b.d[0]
+  })
+  expect(dummy1).toBe(1)
+  expect(dummy2).toBe(1)
+  expect(dummy3).toBe(1)
+  a.value++
+  expect(dummy1).toBe(2)
+  expect(dummy2).toBe(2)
+  expect(dummy3).toBe(2)
+  obj.a++
+  expect(dummy1).toBe(3)
+  expect(dummy2).toBe(3)
+  expect(dummy3).toBe(3)
+})
+复制代码</code></pre><p>第四个单测，终于引入了 <code>reactive</code>&nbsp;。在之前 <code>reactive</code>&nbsp;的单测中，传递的都是简单的对象。在此处，传递的对象中的一些属性值是 <code>Ref</code>&nbsp;数据。并且这样使用以后，这些 <code>Ref</code>&nbsp;数据再也不需要用.value取值了，甚至是内部嵌套的 <code>Ref</code>&nbsp;数据也不需要。利用TS的类型推导，我们可以清晰的看到。</p>
+<p></p><figure><img alt="image.png" src="https://user-gold-cdn.xitu.io/2019/10/8/16dabb9d491c390d?imageView2/0/w/1280/h/960/format/webp/ignore-error/1"><figcaption></figcaption></figure><p></p>
+<p>到这我们其实能理解 <code>reactive</code>&nbsp;的返回类型为什么叫做 <code>UnwrapNestedRefs&lt;T&gt;</code>&nbsp;了。由于泛型&nbsp;<code>T</code>&nbsp;可能是个 <code>Ref&lt;T&gt;</code>&nbsp;，所以这个返回类型其实意思为：解开包裹着的嵌套 <code>Ref</code>&nbsp;的泛型 <code>T</code>&nbsp;。具体来说就是，**如果传给 <code>reactive</code>&nbsp;函数一个 <code>Ref</code>&nbsp;数据，那函数执行后返回的数据类型是 <code>Ref</code>&nbsp;数据的原始数据的数据类型。**这个没怎么接触TS的人应该是不理解的，以后源码解析时再具体阐述吧。</p>
+<p>另外，本单测解开了上个单测中我们的疑问，<strong>修改&nbsp;<code>Reactive</code>&nbsp;数据，也会触发effect的更新。</strong></p>
+<p><strong>第五个单测</strong></p>
+<pre><code lang="typescript">it('should unwrap nested values in types', () =&gt; {
+  const a = {
+    b: ref(0)
+  }
+  const c = ref(a)
+  expect(typeof (c.value.b + 1)).toBe('number')
+})
+复制代码</code></pre><p>第五个单测很有意思，我们发现对嵌套的 <code>Ref</code>&nbsp;数据的取值，只需要最开始使用.value，内部的代理数据不需要重复调用.value。说明在上个单测中，向 <code>reactive</code>&nbsp;函数传递的嵌套 <code>Ref</code>&nbsp;数据能被解套，跟 <code>reactive</code>&nbsp;函数其实是没关系的，是<code>Ref</code>&nbsp;数据自身拥有的能力。其实根据TS type跟类型推导，我们也能看出来：</p>
+<p></p><figure><br><figcaption></figcaption></figure><figure><br><figcaption></figcaption></figure><p></p>
+<p>那如果我多套几层呢，比如这样：</p>
+<pre><code lang="typescript">const a = {
+  b: ref(0),
+  d: {
+    b: ref(0),
+    d: ref({
+      b: 0,
+      d: {
+        b: ref(0)
+      }
+    })
+  }
+}
+
+const c = ref(a)
+复制代码</code></pre><p>反正就是套来套去，一下套一下又不套，根据TS类型推导，我们发现这种情况也毫无问题，只要最开始.value一次即可。</p>
+<p></p><figure><br><figcaption></figcaption></figure><p></p>
+<p>不过这个能力在小右10月5号的发布的第一个版本是有欠缺的，它不能推导嵌套超过9层的数据。这个<a target="_blank" href="https://link.juejin.im?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fvue-next%2Fcommit%2Fc6b7afcc23faefd8c504c3c5705ecb5b0f4be0fd" rel="nofollow noopener noreferrer">commit</a>解决了这个问题，对TS类型推导有兴趣的同学可以看下。</p>
+<p></p><figure><br><figcaption></figcaption></figure><p></p>
+<p><strong>第六个单测</strong></p>
+<pre><code lang="typescript">test('isRef', () =&gt; {
+  expect(isRef(ref(1))).toBe(true)
+  expect(isRef(computed(() =&gt; 1))).toBe(true)
+
+  expect(isRef(0)).toBe(false)
+  // an object that looks like a ref isn't necessarily a ref
+  expect(isRef({ value: 0 })).toBe(false)
+})
+复制代码</code></pre><p>这个单测没太多好讲，不过也有些有用的信息， <code>computed</code>&nbsp;虽然还没接触，但我们知道了，它的返回结果也是个ref数据。<strong>换言之，如果有effect是依赖&nbsp;<code>computed</code>&nbsp;的返回数据的，那当它改变时，effect也会执行</strong>。</p>
+<p><strong>最后一个单测</strong></p>
+<pre><code lang="typescript">test('toRefs', () =&gt; {
+  const a = reactive({
+    x: 1,
+    y: 2
+  })
+
+  const { x, y } = toRefs(a)
+
+  expect(isRef(x)).toBe(true)
+  expect(isRef(y)).toBe(true)
+  expect(x.value).toBe(1)
+  expect(y.value).toBe(2)
+
+  // source -&gt; proxy
+  a.x = 2
+  a.y = 3
+  expect(x.value).toBe(2)
+  expect(y.value).toBe(3)
+
+  // proxy -&gt; source
+  x.value = 3
+  y.value = 4
+  expect(a.x).toBe(3)
+  expect(a.y).toBe(4)
+
+  // reactivity
+  let dummyX, dummyY
+  effect(() =&gt; {
+    dummyX = x.value
+    dummyY = y.value
+  })
+  expect(dummyX).toBe(x.value)
+  expect(dummyY).toBe(y.value)
+
+  // mutating source should trigger effect using the proxy refs
+  a.x = 4
+  a.y = 5
+  expect(dummyX).toBe(4)
+  expect(dummyY).toBe(5)
+})
+复制代码</code></pre><p>这个单测是针对 <code>toRefs</code>&nbsp;这个api的。根据单测来看， <code>toRefs</code>&nbsp; 跟 <code>ref</code>&nbsp;的区别就是， <code>ref</code>&nbsp;会将传入的数据变成 <code>Ref</code>&nbsp;类型，而 <code>toRefs</code>&nbsp;要求传入的数据必须是object，然后将此对象的第一层数据转为 <code>Ref</code>&nbsp;类型。也不知道它能干什么用，知道效果是怎么样就行。</p>
+<p>至此ref的单测看完了，大致可以感受到ref最重要的目的就是，<strong>实现非对象数据的劫持</strong>。其他的话，似乎没有其他特殊的用处。实际上在effect的测试文件中，目前也只测试了 <code>reactive</code>&nbsp;数据触发effect方法。</p>
+<p>那下面我们看看effect的测试文件。</p>
+<p><a name="Avx6E"></a></p>
+<h3>Effect</h3>
+<p><code>effect</code>&nbsp;的行为其实从上述的测试文件中，我们已经能明白了。主要就是可以监听响应式数据的变化，触发监听函数的执行。事情描述虽然简单，但 <code>effect</code>&nbsp;的单测量却很多，有39个用例，600多行代码，很多边界情况的考虑。所以针对effect，我就不一个个列举了。我先帮大家看一遍，然后总结分成几个小点，直接总结关键结论，有必要的话，再贴上相应测试代码。</p>
+<p><a name="qR4mV"></a></p>
+<h4>基本能力</h4>
+<ul>
+<li><strong>传递给effect的方法，会立即执行一次</strong>。（除非第二个参数传递了{ lazy: true }，这得从源码看，单测没覆盖，有兴趣的同学，可以去提PR）。</li>
+<li><code>reactive</code>&nbsp;可以观察原型链上数据的变化，且被effect函数监听到，也可以继承原型链上的属性访问器(get/set)。</li>
+</ul>
+<pre><code lang="typescript">it('should observe properties on the prototype chain', () =&gt; {
+  let dummy
+  const counter = reactive({ num: 0 })
+  const parentCounter = reactive({ num: 2 })
+  Object.setPrototypeOf(counter, parentCounter)
+  effect(() =&gt; (dummy = counter.num))
+
+  expect(dummy).toBe(0)
+  delete counter.num
+  expect(dummy).toBe(2)
+  parentCounter.num = 4
+  expect(dummy).toBe(4)
+  counter.num = 3
+  expect(dummy).toBe(3)
+})
+复制代码</code></pre><ul>
+<li>对任何响应数据有任何读操作都能做到响应执行，对于任何响应数据的任何写操作都能被监听。除非：
+<ul>
+<li>更新的数据的健值是一些内置的特殊Symbol值，如 <code>Symbol.isConcatSpreadable</code>&nbsp;（日常使用基本不会涉及）</li>
+<li><strong>虽然执行了写操作，但数据没有变更，也不会触发监听函数</strong></li>
+</ul>
+</li>
+</ul>
+<pre><code lang="typescript">it('should not observe set operations without a value change', () =&gt; {
+  let hasDummy, getDummy
+  const obj = reactive({ prop: 'value' })
+
+  const getSpy = jest.fn(() =&gt; (getDummy = obj.prop))
+  const hasSpy = jest.fn(() =&gt; (hasDummy = 'prop' in obj))
+  effect(getSpy)
+  effect(hasSpy)
+
+  expect(getDummy).toBe('value')
+  expect(hasDummy).toBe(true)
+  obj.prop = 'value'
+  expect(getSpy).toHaveBeenCalledTimes(1)
+  expect(hasSpy).toHaveBeenCalledTimes(1)
+  expect(getDummy).toBe('value')
+  expect(hasDummy).toBe(true)
+})
+复制代码</code></pre><ul>
+<li><strong>对响应数据的原始数据的操作，不会触发监听函数</strong></li>
+<li>一个监听函数内允许引入另外一个监听函数。</li>
+<li>每次effect执行返回的都是全新的监听函数，即使传递的相同的函数。</li>
+</ul>
+<pre><code lang="typescript">it('should return a new reactive version of the function', () =&gt; {
+  function greet() {
+    return 'Hello World'
+  }
+  const effect1 = effect(greet)
+  const effect2 = effect(greet)
+  expect(typeof effect1).toBe('function')
+  expect(typeof effect2).toBe('function')
+  expect(effect1).not.toBe(greet)
+  expect(effect1).not.toBe(effect2)
+})
+复制代码</code></pre><ul>
+<li>可以通过 <code>stop</code>&nbsp;api，终止监听函数继续监听。(感觉可以再加个&nbsp;<code>start</code>&nbsp;，有兴趣的同学可以给小右提PR)</li>
+</ul>
+<pre><code lang="typescript">it('stop', () =&gt; {
+  let dummy
+  const obj = reactive({ prop: 1 })
+  const runner = effect(() =&gt; {
+    dummy = obj.prop
+  })
+  obj.prop = 2
+  expect(dummy).toBe(2)
+  stop(runner)
+  obj.prop = 3
+  expect(dummy).toBe(2)
+
+  // stopped effect should still be manually callable
+  runner()
+  expect(dummy).toBe(3)
+})
+复制代码</code></pre><p><a name="20SOV"></a></p>
+<h4>特殊逻辑</h4>
+<ul>
+<li>**能避免隐性递归导致的无限循环，<strong>如监听函数内部又改变了响应数据或多个监听函数互相影响</strong>。但不会阻止显性递归，**比如监听函数循环调用自身。</li>
+</ul>
+<pre><code lang="typescript">it('should avoid implicit infinite recursive loops with itself', () =&gt; {
+  const counter = reactive({ num: 0 })
+
+  const counterSpy = jest.fn(() =&gt; counter.num++)
+  effect(counterSpy)
+  expect(counter.num).toBe(1)
+  expect(counterSpy).toHaveBeenCalledTimes(1)
+  counter.num = 4
+  expect(counter.num).toBe(5)
+  expect(counterSpy).toHaveBeenCalledTimes(2)
+})
+
+it('should allow explicitly recursive raw function loops', () =&gt; {
+  const counter = reactive({ num: 0 })
+  const numSpy = jest.fn(() =&gt; {
+    counter.num++
+    if (counter.num &lt; 10) {
+      numSpy()
+    }
+  })
+  effect(numSpy)
+  expect(counter.num).toEqual(10)
+  expect(numSpy).toHaveBeenCalledTimes(10)
+})
+复制代码</code></pre><ul>
+<li>**如果effect内部的依赖是有逻辑分支的，监听函数每次执行以后会重新更新依赖。**如下所示：当 <code>obj.run</code>&nbsp;为 <code>false</code>&nbsp;时， <code>conditionalSpy</code>&nbsp;重新执行一次后更新了监听依赖，后续无论 <code>obj.prop</code>&nbsp;如何变化，监听函数也不会再执行。</li>
+</ul>
+<pre><code lang="typescript">it('should not be triggered by mutating a property, which is used in an inactive branch', () =&gt; {
+  let dummy
+  const obj = reactive({ prop: 'value', run: true })
+
+  const conditionalSpy = jest.fn(() =&gt; {
+    dummy = obj.run ? obj.prop : 'other'
+  })
+  effect(conditionalSpy)
+
+  expect(dummy).toBe('value')
+  expect(conditionalSpy).toHaveBeenCalledTimes(1)
+  obj.run = false
+  expect(dummy).toBe('other')
+  expect(conditionalSpy).toHaveBeenCalledTimes(2)
+  obj.prop = 'value2'
+  expect(dummy).toBe('other')
+  expect(conditionalSpy).toHaveBeenCalledTimes(2)
+})
+复制代码</code></pre><p><a name="FcEqv"></a></p>
+<h4>ReactiveEffectOptions</h4>
+<p><code>effect</code>&nbsp;还能接受第二参数 <code>ReactiveEffectOptions</code>&nbsp;，参数如下：</p>
+<pre><code lang="typescript">export interface ReactiveEffectOptions {
+  lazy?: boolean
+  computed?: boolean
+  scheduler?: (run: Function) =&gt; void
+  onTrack?: (event: DebuggerEvent) =&gt; void
+  onTrigger?: (event: DebuggerEvent) =&gt; void
+  onStop?: () =&gt; void
+}
+复制代码</code></pre><ul>
+<li><strong>lazy</strong>: 延迟计算，为true时候，传入的effect不会立即执行。</li>
+<li><strong>computed</strong>：单测中没体现，不知道干啥用，看名字可能是跟 <code>computed</code>&nbsp;有关系，先放着。</li>
+<li><strong>scheduler</strong>：调度器函数，接受的入参run即是传给effect的函数，如果传了scheduler，则可通过其调用监听函数。</li>
+<li><strong>onStop</strong>：通过 <code>stop</code>&nbsp;终止监听函数时触发的事件。</li>
+<li><strong>onTrack</strong>：<strong>仅供调试使用</strong>。在收集依赖(get阶段)的过程中触发。</li>
+<li><strong>onTrigger</strong>：<strong>仅供调试使用</strong>。在触发更新后执行监听函数之前触发。</li>
+</ul>
+<p><code>effect</code>&nbsp;的逻辑虽然很多，但核心概念还是好理解的，需要关注的是内部一些特殊的优化，将来阅读源码时需要重点看看。接下来还有个 <code>computed</code>&nbsp;我们接触了但还没阅读。</p>
+<p><a name="7BZ9y"></a></p>
+<h3>Computed</h3>
+<p>计算属性。这个写过vue的同学，应该的都能知道是什么意思。我们看看在 <code>reactivity</code>&nbsp;中它具体如何。</p>
+<p><strong>第一个单测</strong></p>
+<pre><code lang="typescript">it('should return updated value', () =&gt; {
+  const value = reactive&lt;{ foo?: number }&gt;({})
+  const cValue = computed(() =&gt; value.foo)
+  expect(cValue.value).toBe(undefined)
+  value.foo = 1
+  expect(cValue.value).toBe(1)
+})
+复制代码</code></pre><p>向 <code>computed</code>&nbsp;传递一个getter函数，函数内部依赖了一个 <code>Reactive</code>&nbsp;数据，函数执行后返回一个计算对象，其value为函数的返回值。当其依赖的 <code>Reactive</code>&nbsp;数据变更时，计算数据能保持同步，好像 <code>Ref</code>&nbsp;呀。其实在 <code>ref</code>&nbsp;测试文件中我们已经知道了，computed的返回结果也是一种 <code>Ref</code>&nbsp;数据。<br></p><figure><br><figcaption></figcaption></figure><p></p>
+<p>查看TS Type，果然&nbsp;<code>ComputedRef</code>&nbsp; 继承于 <code>Ref</code>&nbsp;，相比 <code>Ref</code>&nbsp;多了一个只读的 effect 属性，类型是 <code>ReactiveEffect</code>&nbsp;。那能猜到，此处的effect属性的值应该就是我们传给 <code>computed</code>&nbsp;的计算函数，再被 <code>effect</code>&nbsp;函数执行后返回的结果。另外其 <code>value</code>&nbsp;是只读的，说明 <code>computed</code>&nbsp;的返回结果的value值是只读的。</p>
+<p><strong>第二个单测</strong></p>
+<pre><code lang="typescript">it('should compute lazily', () =&gt; {
+  const value = reactive&lt;{ foo?: number }&gt;({})
+  const getter = jest.fn(() =&gt; value.foo)
+  const cValue = computed(getter)
+
+  // lazy
+  expect(getter).not.toHaveBeenCalled()
+
+  expect(cValue.value).toBe(undefined)
+  expect(getter).toHaveBeenCalledTimes(1)
+
+  // should not compute again
+  cValue.value
+  expect(getter).toHaveBeenCalledTimes(1)
+
+  // should not compute until needed
+  value.foo = 1
+  expect(getter).toHaveBeenCalledTimes(1)
+
+  // now it should compute
+  expect(cValue.value).toBe(1)
+  expect(getter).toHaveBeenCalledTimes(2)
+
+  // should not compute again
+  cValue.value
+  expect(getter).toHaveBeenCalledTimes(2)
+})
+复制代码</code></pre><p>这个单测告诉了我们 <code>computed</code>&nbsp;很多特性：</p>
+<ul>
+<li>不同于 <code>effect</code>&nbsp;，向 <code>computed</code>&nbsp;传递的 <code>getter</code>&nbsp;函数，并不会立即执行，当真正使用该数据时才会执行。</li>
+<li>并非每次取值都需要重新调用&nbsp;<code>getter</code>&nbsp;函数，且&nbsp;<code>getter</code>&nbsp;函数依赖的数据变更时也不会重新触发，当且仅当依赖数据变更后，再次使用计算数据时，才会真正触发 <code>getter</code>&nbsp;函数。</li>
+</ul>
+<p>第一个单测中，我们猜想 <code>ComputedRef</code>&nbsp;的effect属性，是通过向&nbsp;<code>effect</code>&nbsp;方法传递 <code>getter</code>&nbsp;函数生成的监听函数。但是在&nbsp;<code>effect</code>&nbsp;单测中，一旦依赖数据变更，这个监听函数就会立即执行，这就跟此处 <code>computed</code>&nbsp;的表现不一致了。这其中一定有猫腻！</p>
+<p>在上一小节 <code>Effect</code>&nbsp;的最后，我们发现 <code>effect</code>&nbsp;函数第二个参数是个配置项，而其中有个配置就叫computed，在单测中也没覆盖到。估计就是这个配置项，实现了此处计算数据的延迟计算。</p>
+<p><strong>第三个单测</strong></p>
+<pre><code lang="typescript">it('should trigger effect', () =&gt; {
+  const value = reactive&lt;{ foo?: number }&gt;({})
+  const cValue = computed(() =&gt; value.foo)
+  let dummy
+  effect(() =&gt; {
+    dummy = cValue.value
+  })
+  expect(dummy).toBe(undefined)
+  value.foo = 1
+  expect(dummy).toBe(1)
+})
+复制代码</code></pre><p>这个单测证明了我们在 <code>Ref</code>&nbsp;一章中提出的猜想：<strong>如果有effect是依赖&nbsp;<code>computed</code>&nbsp;的返回数据的，那当它改变时，effect也会执行</strong>。</p>
+<p>那如果 <code>computed</code>&nbsp;返回数据虽然没变更，但是其依赖数据变更了呢？这样会不会导致 <code>effect</code>&nbsp;执行呢？我猜想如果 <code>computed</code>&nbsp;的值不变的话，是不会导致监听函数重新执行的，于是改变下单测：</p>
+<pre><code lang="typescript">it('should trigger effect', () =&gt; {
+  const value = reactive&lt;{ foo?: number }&gt;({})
+  const cValue = computed(() =&gt; value.foo ? true : false)
+  let dummy
+  const reactiveEffect = jest.fn(() =&gt; {
+    dummy = cValue.value
+  })
+  effect(reactiveEffect)
+  expect(dummy).toBe(false)
+  expect(reactiveEffect).toHaveBeenCalledTimes(1)
+  value.foo = 1
+  expect(dummy).toBe(true)
+  expect(reactiveEffect).toHaveBeenCalledTimes(2)
+  value.foo = 2
+  expect(dummy).toBe(true)
+  expect(reactiveEffect).toHaveBeenCalledTimes(2)
+})
+复制代码</code></pre><p><strong>然后发现我错了</strong>。 <code>reactiveEffect</code>&nbsp;依赖于 <code>cValue</code>&nbsp;，<code>cValue</code>&nbsp;依赖于 <code>value</code>&nbsp;，只要 <code>value</code>&nbsp;变更，不管 <code>cValue</code>&nbsp;有没有改变，都会重新触发 <code>reactiveEffect</code>&nbsp;。感觉这里可以优化下，有兴趣的同学可以去提PR。</p>
+<p><strong>第四个单测</strong></p>
+<pre><code lang="typescript">it('should work when chained', () =&gt; {
+  const value = reactive({ foo: 0 })
+  const c1 = computed(() =&gt; value.foo)
+  const c2 = computed(() =&gt; c1.value + 1)
+  expect(c2.value).toBe(1)
+  expect(c1.value).toBe(0)
+  value.foo++
+  expect(c2.value).toBe(2)
+  expect(c1.value).toBe(1)
+})
+复制代码</code></pre><p>这个单测说明了 <code>computed</code>&nbsp;的 <code>getter</code>&nbsp;函数可以依赖于另外的 <code>computed</code>&nbsp;数据。</p>
+<p>第五第六个单测属于变着花儿的使用 <code>computed</code>&nbsp;。传达的概念就是：使用 <code>computed</code>&nbsp;数据跟使用正常的响应数据差不多，都能正确的触发监听函数的执行。</p>
+<p><strong>第七个单测</strong></p>
+<pre><code lang="javascript">it('should no longer update when stopped', () =&gt; {
+  const value = reactive&lt;{ foo?: number }&gt;({})
+  const cValue = computed(() =&gt; value.foo)
+  let dummy
+  effect(() =&gt; {
+    dummy = cValue.value
+  })
+  expect(dummy).toBe(undefined)
+  value.foo = 1
+  expect(dummy).toBe(1)
+  stop(cValue.effect)
+  value.foo = 2
+  expect(dummy).toBe(1)
+})
+复制代码</code></pre><p>这个单测又引入了 <code>stop</code>&nbsp;这个api，通过 <code>stop(cValue.effect)</code>&nbsp;终止了此计算数据的响应更新。</p>
+<p><strong>最后两个单测</strong></p>
+<pre><code lang="typescript">it('should support setter', () =&gt; {
+  const n = ref(1)
+  const plusOne = computed({
+    get: () =&gt; n.value + 1,
+    set: val =&gt; {
+      n.value = val - 1
+    }
+  })
+  expect(plusOne.value).toBe(2)
+  n.value++
+  expect(plusOne.value).toBe(3)
+  plusOne.value = 0
+  expect(n.value).toBe(-1)
+})
+it('should trigger effect w/ setter', () =&gt; {
+  const n = ref(1)
+  const plusOne = computed({
+    get: () =&gt; n.value + 1,
+    set: val =&gt; {
+      n.value = val - 1
+    }
+  })
+  let dummy
+  effect(() =&gt; {
+    dummy = n.value
+  })
+  expect(dummy).toBe(1)
+  plusOne.value = 0
+  expect(dummy).toBe(-1)
+})
+复制代码</code></pre><p>这两个单测比较重要。之前我们 <code>computed</code>&nbsp;只是传递 <code>getter</code>&nbsp;函数，且其 <code>value</code>&nbsp;是只读的，无法直接修改返回值。这里让我们知道， <code>computed</code>&nbsp;也可以传递一个包含get/set两个方法的对象。get就是 <code>getter</code>&nbsp;函数，比较好理解。 <code>setter</code>&nbsp;函数接收的入参即是赋给&nbsp;<code>comptued</code>&nbsp;value数据的值。所以在上面用例中，<br><code>plusOne.value = 0</code>&nbsp;,使得 <code>n.value = 0 - 1</code>&nbsp;，再触发 <code>dummy</code>&nbsp;变为-1。</p>
+<p>至此，我们基本看完了 <code>reactivity</code>&nbsp;系统的概念，还剩下&nbsp;<code>readonly</code>&nbsp;跟 <code>collections</code>&nbsp;。 <code>readonly</code>&nbsp;单测文件特别多，但实际上概念很简单的，就是 <code>reactive</code>&nbsp;的只读版本。 <code>collections</code>&nbsp;单测是为了覆盖 <code>Map</code>&nbsp;、<code>Set</code>&nbsp;、<code>WeakMap</code>&nbsp;、<code>WeakSet</code>&nbsp;的响应更新的，暂时不看的问题应该也不大。</p>
+<p><a name="fkcPB"></a></p>
+<h2>总结</h2>
+<p>梳理完以后，我们应该对内部的主要api有了清晰的认识，我们再总结复习一下：</p>
+<p><strong>reactive</strong>: 本库的核心方法，传递一个object类型的原始数据，通过Proxy，返回一个代理数据。在这过程中，劫持了原始数据的任何读写操作。进而实现改变代理数据时，能触发依赖其的监听函数effect。</p>
+<p><strong>ref</strong>：这是最影响代码阅读的一个文件（粗看代码很容易搞晕它跟reactive的关系），但要想真正明白它，又需要仔细阅读代码。建议在理清其他逻辑前，千万别管它....当它不存在。只要知道，这个文件最重要的作用就是提供了一套&nbsp;<code>Ref</code>&nbsp;类型。</p>
+<p><strong>effect</strong>：接受一个函数，返回一个新的监听函数 <code>reactiveEffect</code>&nbsp;。若监听函数内部依赖了reactive数据，当这些数据变更时会触发监听函数。</p>
+<p><strong>computed</strong>: 计算数据，接受一个getter函数或者包含get/set行为的对象，返回一个响应式的数据。它若有变更，也会触发reactiveEffect。</p>
+<p>最后画了张大致的图，方便记忆回顾。</p><p><br></p></div>作者：蚂蚁保险体验技术<br>链接：https://juejin.im/post/5d9c9a135188252e097569bd<br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div>

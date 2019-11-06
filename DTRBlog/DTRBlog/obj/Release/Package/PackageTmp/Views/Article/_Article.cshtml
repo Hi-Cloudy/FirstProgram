@@ -1,0 +1,50 @@
+﻿@model Webdiyer.WebControls.Mvc.PagedList<DTRBlog.Model.ArticleList>
+    <main>
+        <div class="bloglist">
+            @if (Model.Count() == 0)
+            {
+                <div style="margin:75px auto;font-size:1.76rem" class="text-center text-muted">
+                    这个人很懒，什么都没留下！
+                </div>
+            }
+            <ul>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                  
+                        <li>
+                            @if (item.TitleImg != null)
+                            {
+                                <i class="blogpic"><a href="#"><img src="@item.TitleImg" alt=""> </a></i>
+                            }
+                            <dl>
+                                <dt>
+                                    @{
+                                        string isOk = (item.Article.StateID != 3) ? $"【{item.Article.BlogStateType.StateName}】" : "";
+                                        @Html.RouteLink(item.Article.TopState.Value ? $"[置顶]{item.Article.Title}{isOk}" : $"{item.Article.Title}{isOk} ", "Details", new { BlogId = item.Article.BlogID, id = item.Article.BlogWorksID }, new { target = "_blank" })
+                                    }
+                                </dt>
+                                <dd>
+                                    <span class="bloginfo"> @item.Article.Introduc</span>
+                                    <p class="timeinfo">
+                                        <span class="lanmu"><a href="" target="@Url.Action("Home", new { BlogId = item.Article.BlogID })">@item.BlogUser.Nikename</a></span>
+                                        <span class="info">@item.Article.PublishDate</span>
+                                        <span class="info">浏览(@item.Article.BorwseCount)</span>
+                                        <span class="info">评论(@item.Article.CommentCount)</span>
+                                    </p>
+                                    @Html.RouteLink("阅读更多", "Details", new { BlogId = item.Article.BlogID, id = item.Article.BlogWorksID }, new { @class = "read", target = "_blank" })
+
+                                </dd>
+                            </dl>
+                        </li>
+                    }
+
+                }
+            </ul>
+        </div>
+        <!--bloglist end-->
+        <div class="row pull-right">
+            @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination  pull-right mr-3", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+        </div>
+    </main>

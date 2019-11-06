@@ -1,0 +1,40 @@
+.my-list > ul li.item {
+    border-bottom: 1px solid rgba(230,230,231,.5);
+    color: #808080;
+    display: flex;
+    align-items: center;
+    padding: .5rem 2.4rem;
+    min-height: 7.03rem;
+    position:relative;
+}
+    .my-list > ul li.item .item-left img {
+        flex: 0 0 auto;
+        margin-right: 1.316rem;
+        width: 3.99rem;
+        height: 3.99rem;
+        border-radius: 50%;
+    }
+    .my-list > ul li.item .item-left a:hover {
+        text-decoration:none;
+    }
+    .my-list > ul li.item .nick-name {
+        flex: 1 1 auto;
+        display: inline-block;
+        min-width: 10px;
+        font-size: 1.333rem;
+        font-weight: 600;
+        color: #286090;
+    }
+    .my-list > ul li.item .item-right {
+        position: absolute;
+        right: 5%;
+        top: 50%;
+        margin-top:-17px;
+        float: right;
+    }
+    .my-list > ul li.item:last-child {
+        border-bottom: none;
+    }
+    .my-list > ul li.item:first-child {
+        border-bottom: 1px solid rgba(230,230,231,.5);
+    }

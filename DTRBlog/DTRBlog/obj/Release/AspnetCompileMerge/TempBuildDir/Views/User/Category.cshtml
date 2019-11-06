@@ -1,0 +1,155 @@
+﻿@model PagedList<DTRBlog.Model.Category>
+
+@{
+    ViewBag.Title = "个人文章分类";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+@section head{
+    <link href="~/Content/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/Content/layui/layui.all.js"></script>
+    <link href="~/Content/css/classify.css" rel="stylesheet" />
+}
+
+<div class=" cate-top">
+    <div class="result-list">
+        <div style="float:right">
+            <a onclick="addCate()">
+                <i class="layui-icon layui-icon-add-1"></i>新增分类
+            </a>
+            @*<a href="javascript:void(0)" onclick="delMuilt()">
+                <i class="layui-icon layui-icon-delete"></i>批量删除
+            </a>*@
+        </div>
+        <div style="color:#999;font-size:16px;margin:10px;">
+            个人文章分类
+        </div>
+    </div>
+</div>
+<div>
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr class="color-999">
+                <th class="col-xs-7">类别</th>
+                <th class="col-xs-3">操作</th>
+                <th class="col-xs-2">文章数</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="col-xs-7 cate-name"><a href="@Url.Action("ArticleCategory_List","user",new { id=item.CategoryID})">@item.CategoryName</a> </td>
+                    <td class="col-xs-3"><a href="#" onclick="updateCategory(@item.CategoryID, this)">修改 </a><span>|</span><a href="#" onclick="delCategory(@item.CategoryID, this)"> 删除</a></td>
+                    <td class="col-xs-2">@item.ArticleCount</td>
+                </tr>
+            }     
+        </tbody>
+    </table>          
+   
+</div>
+<div class="page-footer">
+    @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+</div>
+<script>
+    function addCate() {
+        layer.confirm(' <label for="cateName">分类名</label> <input type="text" class="form-control" id="cateName" name="cateName" style="width:300px;" /><span id="error" style="color:red;margin-top:5px;"></span>', {
+            btn: ['添加', '取消'] ,title:'添加分类',area: ['356px', '216px'],
+        },
+            function (index) {
+                console.log($("#cateName").val());
+                var cateName = $("#cateName").val()
+                if (cateName.length == 0) {
+                    $("#error").text("请输入分类名称")
+                    return false;
+                }
+                 if (cateName.length >10) {
+                    $("#error").text("不能超过10个字符长度")
+                    return false;
+                }
+                $.ajax({
+                    url: "/user/AddCategory?categoryName=" + cateName,
+                    type: "post",
+                    success: function (data) {
+                        if (data.code == 1) {
+                            console.log(data);
+                            layer.msg(data.message);
+                            $(".table>tbody").append('<tr><td class="col-xs-7 cate-name"><a href="/user/ArticleCategory_List/'+ data.cate.CategoryID + '">' + data.cate.CategoryName + '</a> </td><td class="col-xs-3"><a href="#" onclick="updateCategory(' + data.cate.CategoryID + ',this)">修改</a> <span>|</span><a href="#" onclick="delCategory(' + data.cate.CategoryID + ',this)"> 删除</a></td><td class="col-xs-2">' + data.cate.ArticleCount + '</td></tr>');
+                            layer.close(index);
+
+                        } else {
+                           
+                             $("#error").text(data.message)
+                        }
+                    }
+                })
+        },
+        function (index) {
+             layer.close(index);
+        });
+    }
+    function updateCategory(cateId, obj) {
+        var name=  $(obj).parent().siblings(".cate-name").find("a").text();
+          layer.confirm(' <label for="cateName">分类名</label> <input type="text" class="form-control" placeholder="原分类名:'+name+'" id="cateName" name="cateName" style="width:300px;" /><span id="error" style="color:red;margin-top:5px;"></span>', {
+            btn: ['修改', '取消'] ,title:'修改分类',area: ['356px', '216px'],
+        },
+            function (index) {
+                console.log($("#cateName").val());
+                var cateName = $("#cateName").val();
+                console.log(name);
+                if (cateName.length == 0) {
+                    $("#error").text("请输入分类名称")
+                    return false;
+                }
+                 if (cateName.length >10) {
+                    $("#error").text("不能超过10个字符长度")
+                    return false;
+                }
+                $.ajax({
+                    url: "/user/UpdateCategory" ,
+                    type: "post",
+                    data: {
+                        categoryName: cateName,
+                        categoryID:cateId
+                    },
+                    success: function (data) {
+                        if (data.code == 1) {
+                            console.log(data);
+                            $(obj).parent().siblings(".cate-name").find("a").text(cateName);
+                            layer.msg(data.message, { icon: 1 });
+                            layer.close(index);
+
+                        } else {
+                             $("#error").text(data.message)
+                        }
+                    }
+                })
+        },
+        function (index) {
+             layer.close(index);
+        });
+    }
+    function delCategory(cateId, obj) {
+
+        layer.confirm('确认删除？', {
+            btn: ['确认', '取消'] 
+        }, function () {
+                $.ajax({
+                    url: "/user/DelCategory?categoryID=" + cateId,
+                    type: 'get',
+                    success: function (data) {
+                        if (data.code == 1) {
+                            layer.msg(data.message, { icon: 1 });
+                            $(obj).parent().parent("tr").remove();
+                            return;
+                        }
+                        layer.msg(data.message, { icon: 2 });
+                        
+                    }
+                })
+        }, function () {
+           
+        });
+    }
+
+
+</script>

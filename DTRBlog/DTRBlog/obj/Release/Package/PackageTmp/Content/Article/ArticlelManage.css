@@ -1,0 +1,110 @@
+﻿div#Article{
+    overflow:hidden;
+}
+    div#Article a:hover{
+        cursor:pointer
+    }
+    div#Article div#left-Menu, div#Article div#right-Ctrl {
+        float: left;
+    }
+    /*菜单*/
+    div#Article div#left-Menu {
+        padding: 3px 0px;
+        width:120px;
+        border-right: 1px solid #c6c6c6;
+    }
+
+    div#Article div#left-Menu div#ArticleMenu ul {
+        padding: 3px 0;
+        list-style: none;
+    }
+div#ArticleMenu ul li {
+    padding: 5px 15px;
+    padding-right: 20px;
+    font-size: 16px;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Calibr'i, 'Trebuchet MS',' sans-serif';
+    cursor:pointer;
+}
+    div#ArticleMenu ul li:hover, div#ArticleMenu ul li:hover a {
+        background-color: #337ab7;
+        color: white;
+    }
+
+    div#ArticleMenu ul li:hover, div#ArticleMenu ul li.CurentPage, div#ArticleMenu ul li:hover, div#ArticleMenu ul li.CurentPage  a{
+        background-color: #337ab7;
+        color: white;
+    }
+
+    /*内容控制*/
+    div#Article div#right-Ctrl {
+        border-right: 1px solid;
+        width: 100%;
+        margin-right: -120px;
+        padding-right: 120px;
+    }
+
+/*条件*/
+div#condition{
+    padding:5px;
+}
+div#condition span.first{
+    padding: 0;
+    margin:0px;
+    margin-left:5px;
+    margin-right:0px;
+}
+    div#condition input, div#condition select {
+        outline: none;
+        height: 28px;
+        color: #808080;
+    }
+        div#condition input[type=text] {
+            width: 260px;
+        }
+        div#condition input[type=date] {
+            width: 140px;
+        }
+        div#condition span {
+            padding: 4px;
+            line-height:15px;
+            position:relative;
+        }
+    div#condition span input[type=checkbox]{
+        position:relative;
+        width:16px;
+        height:16px;
+        left:-5px;
+        top:3px;
+    }
+
+
+
+  /*列表*/
+div#ArticleCtrl div.Article-item {
+    border: 0;
+    border-bottom: 1px solid #eee;
+    padding: 4px 5px;
+    margin-bottom: 7px;
+}
+
+div.Article-item p.title {
+    font-size:16px;
+    color:#838383;
+    font-weight:bold;
+    position:relative;
+    top:5px;
+    padding-left:15px;
+}
+div.Article-item p.Introduc{
+    padding-left: 25px;
+}
+div.Article-item p.title b {
+    color: #535353;
+}
+    div.Article-item p.title b:hover {
+        color: #23527C;
+    }
+div .Article-item span {
+    color: #999999;
+    font-size: 14px;
+}

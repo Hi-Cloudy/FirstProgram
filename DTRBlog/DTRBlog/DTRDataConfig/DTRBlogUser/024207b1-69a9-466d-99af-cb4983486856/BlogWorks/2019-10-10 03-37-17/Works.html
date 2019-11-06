@@ -1,0 +1,337 @@
+
+                    
+                <div><div><h3>作用域函数</h3>
+<p>作用域函数是Kotlin中的一个非常有用的函数，它主要分为两种，一种是拓展函数式，另一种是顶层函数式。作用域函数的主要功能是为调用函数提供一个内部范围，同时结合kotlin的语法糖提供一些便捷操作。</p>
+<p>作用域函数主要有下面这几种，它们的主要区别就是函数体内使用对象和返回值的区别。</p>
+<ul>
+<li>run
+</li></ul>
+
+
+<p>函数体内使用this代替本对象。返回值为函数最后一行或者return指定的表达式</p>
+<ul>
+<li>let
+</li></ul>
+
+
+<p>函数内使用it代替本对象。返回值为函数最后一行或者return指定的表达式。</p>
+<ul>
+<li>apply
+</li></ul>
+
+
+<p>函数内使用this代替本对象。返回值为本对象。</p>
+<ul>
+<li>also
+</li></ul>
+
+
+<p>函数内使用it代替本对象。返回值为本对象。</p>
+<ul>
+<li>takeIf
+</li></ul>
+
+
+<p>条件为真返回对象本身否则返回null。</p>
+<ul>
+<li>takeUnless
+</li></ul>
+
+
+<p>条件为真返回null否则返回对象本身。</p>
+<ul>
+<li>with
+</li></ul>
+
+
+<p>with比较特殊，不是以扩展方法的形式存在的，而是一个顶级函数。传入参数为对象，函数内使用this代替对象。返回值为函数最后一行或者return指定的表达式。</p>
+<ul>
+<li>repeat
+</li></ul>
+
+
+<p>将函数体执行多次。</p>
+<p>通过表格进行下总结，如下所示。</p>
+<table>
+<tbody><tr>
+<th>操作符</th>
+<th>this/it</th>
+<th>返回值</th>
+</tr>
+<tr>
+<td>let<br></td>
+<td>it<br></td>
+<td>最后一行或者return指定的表达式</td>
+</tr>
+<tr>
+<td>with</td>
+<td>it<br></td>
+<td>最后一行或者return指定的表达式</td>
+</tr>
+<tr>
+<td>run<br></td>
+<td>this<br></td>
+<td>最后一行或者return指定的表达式</td>
+</tr>
+<tr>
+<td>also</td>
+<td>this</td>
+<td>上下文对象</td>
+</tr>
+<tr>
+<td>apply</td>
+<td>this</td>
+<td>上下文对象</td>
+</tr>
+</tbody></table>
+
+<p>下面通过一个简单的例子来演示下这些作用域函数的基本使用方式。</p>
+<pre><code>class TestBean {
+    var name: String = "xuyisheng"
+    var age: Int = 18
+}
+fun main(args: Array&lt;String&gt;) {
+    val test = TestBean()
+    val resultRun = test.run {
+        name = "xys"
+        age = 3
+        println("Run内部 $this")
+        age
+    }
+    println("run返回值 $resultRun")
+    val resultLet = test.let {
+        it.name = "xys"
+        it.age = 3
+        println("let内部 $it")
+        it.age
+    }
+    println("let返回值 $resultLet")
+    val resultApply = test.apply {
+        name = "xys"
+        age = 3
+        println("apply内部 $this")
+        age
+    }
+    println("apply返回值 $resultApply")
+    val resultAlso = test.also {
+        it.name = "xys"
+        it.age = 3
+        println("also内部 $it")
+        it.age
+    }
+    println("also返回值 $resultAlso")
+    val resultWith = with(test) {
+        name = "xys"
+        age = 3
+        println("with内部 $this")
+        age
+    }
+    println("with返回值 $resultWith")
+    test.age = 33
+    val resultTakeIf = test.takeIf {
+        it.age &gt; 3
+    }
+    println("takeIf $resultTakeIf")
+    val resultTakeUnless = test.takeUnless {
+        it.age &gt; 3
+    }
+    println("takeUnless $resultTakeUnless")
+}复制代码</code></pre>
+
+<p>执行结果如下所示。</p>
+<pre><code>Run内部 TestBean@27c170f0
+run返回值 3
+let内部 TestBean@27c170f0
+let返回值 3
+apply内部 TestBean@27c170f0
+apply返回值 TestBean@27c170f0
+also内部 TestBean@27c170f0
+also返回值 TestBean@27c170f0
+with内部 TestBean@27c170f0
+with返回值 3
+takeIf TestBean@27c170f0
+takeUnless null复制代码</code></pre>
+
+<p>官网提供了一张图来帮助开发者选择合适的作用域函数，如下所示。</p>
+<p><img title="file" alt="file" src="data:image/svg+xml;utf8,<?xml version=&quot;1.0&quot;?><svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1.1&quot; width=&quot;800&quot; height=&quot;332&quot;></svg>"></p>
+<h3>顶级函数使用场景</h3>
+<p>run、with、repeat，是比较常用的3个顶级函数，它们是区别于其它几种拓展函数类型的，它们的使用也比较简单，示例代码如下所示。</p>
+<ul>
+<li>run
+</li></ul>
+
+
+<pre><code>fun testRun() {
+    var str = "I am xys"
+    run {
+        val str = "I am zj"
+        println(str) // I am xys
+    }
+    println(str)  // I am zj
+}复制代码</code></pre>
+
+<p>可以发现，run顶级函数提供了一个独立的作用域，可以在该作用域内完整的使用全新的变量和属性。</p>
+<ul>
+<li>repeat
+</li></ul>
+
+
+<pre><code>repeat(5){
+    print("repeat")
+}复制代码</code></pre>
+
+<p>repeat比较简单，直接将函数体按指定次数执行。</p>
+<ul>
+<li>with
+</li></ul>
+
+
+<p>前面的代码已经演示过with如何使用。</p>
+<pre><code>with(ArrayList&lt;String&gt;()) {
+    add("a")
+    add("b")
+    add("c")
+    println("this = " + this)
+    this
+}复制代码</code></pre>
+
+<p>要注意的是其返回值是根据return的类型或者最后一行代码来进行判断的。</p>
+<h2>拓展函数使用场景</h2>
+<p></p>
+<h3>?.结合拓展函数</h3>
+<p>Kotlin的?操作符和作用域函数的拓展函数可以非常方便的进行对象的判空及后续处理，例如下面的例子。</p>
+<pre><code>// 对result进行了判空并bindData
+result?.let {
+    if (it.isNotEmpty()) {
+        bindData(it)
+    }
+}复制代码</code></pre>
+
+<p></p>
+<h3>简化对象的创建</h3>
+<p>类似apply这样的作用域函数，可以返回this的作用域函数，可以将对象的创建和属性的赋值写在一起，简化代码，类似builder模式，例如下面的这个例子。</p>
+<pre><code>// 使用普通的方法创建一个Fragment
+fun createInstance(args: Bundle) : MyFragment {
+    val fragment = MyFragment()
+    fragment.arguments = args
+    return fragment
+}
+// 通过apply来创建一个Fragment
+fun createInstance(args: Bundle)
+    = MyFragment().apply { arguments = args }复制代码</code></pre>
+
+<p>再例如下面的实现。</p>
+<pre><code>// 使用普通的方法创建Intent
+fun createIntent(intentData: String, intentAction: String): Intent {
+    val intent = Intent()
+    intent.action = intentAction
+    intent.data = Uri.parse(intentData)
+    return intent
+}
+ 
+// 通过apply函数的链式调用创建Intent
+fun createIntent(intentData: String, intentAction: String) =
+    Intent().apply { action = intentAction }
+    .apply { data = Uri.parse(intentData) }复制代码</code></pre>
+
+<p>以及下面的实现。</p>
+<pre><code>// 正常方法
+fun makeDir(path: String): File  {
+    val result = File(path)
+    result.mkdirs()
+    return result
+}
+// 改进方法
+fun makeDir(path: String) 
+    = path.let{ File(it) }.also{ it.mkdirs() }复制代码</code></pre>
+
+<p></p>
+<h3>同一对象的多次操作</h3>
+<p>在开发中，有些对象有很多参数或者方法需要设置，但该对象又没用提供builder方式进行构建，例如下面的例子。</p>
+<pre><code>val linearLayout = LinearLayout(itemView.context).apply {
+    orientation = LinearLayout.VERTICAL
+    layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT)
+}
+
+progressBar.apply {
+    progress = newProgress
+    visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
+}复制代码</code></pre>
+
+<p>不论是let、run、apply还是其它拓展函数，都可以实现这样的需求，借助it或this，可以很方便的对该对象的多个属性进行操作。</p>
+<p>不过这些拓展函数还是有一些细微的差别的，例如T.run和T.let(即使用it和this的区别)</p>
+<ul>
+<li>使用it的作用域函数，可以使用特定的变量名来重命名it，从而表达更清楚的语义。
+</li><li>this在大部分情况下是可以省略的，比使用it简单
+</li></ul>
+
+
+<p>例如下面的例子。</p>
+<pre><code>stringResult?.let {
+      nonNullString -&gt;
+      println("The non null string is $nonNullString")
+}复制代码</code></pre>
+
+<p>通过对it的重命名，语义表达更加清楚。</p>
+<h3>条件操作</h3>
+<p>借助kotlin的?操作符，可以简化很多条件操作，例如下面的几个例子。</p>
+<pre><code>url = intent.getStringExtra(EXTRA_URL)?.takeIf { it.isNotEmpty() } ?: run {
+    toast("url空")
+    activity.finish()
+}复制代码</code></pre>
+
+<p>上面的代码演示了【从intent中取出url并在url为空时的操作】。</p>
+<pre><code>test.takeIf { it.name.isNotEmpty() }?.also { print("name is $it.name") } ?: print("name empty")复制代码</code></pre>
+
+<p>上面代码演示了【从test中取出name，不为空的时候和为空的时候的操作】。</p>
+<h3>链式调用</h3>
+<p>作用域函数的一个非常方便的作用就是通过其返回值的改变来组装链式调用。一个简单示例如下所示。</p>
+<pre><code>test.also {
+    // todo something
+}.apply {
+    // todo something
+}.name = "xys"复制代码</code></pre>
+
+<p>通过let来改变返回值，从而将不同的处理通过链式调用串联起来。</p>
+<pre><code>val original = "abc"
+// 改变值并且传递到下一链条
+original.let {
+    println("The original String is $it") // "abc"
+    it.reversed() // 改变参数并且传递到下一链条
+}.let {
+    println("The reverse String is $it") // "cba"
+    it.length   // 改变参数类型并且传递到下一链条
+}.let {
+    println("The length of the String is $it") // 3
+}复制代码</code></pre>
+
+<p>上面的代码借助let，可以将函数的返回值不断进行修改，从而直接将下一个操作进行链式连接。而使用also（即返回this的作用域函数）可以将多个对同一对象的操作进行链式调用，如下所示。</p>
+<pre><code>original.also {
+    println("The original String is $it") // "abc"
+    it.reversed() // 即使我们改变它，也是没用的
+}.also {
+    println("The reverse String is ${it}") // "abc"
+    it.length  // 即使我们改变它，也是没用的
+}.also {
+    println("The length of the String is ${it}") // "abc"
+}复制代码</code></pre>
+
+<p>这里只是为了演示，所以将可以写在同一个作用域函数中的进行了拆分。</p>
+<p>also和let的链式调用，实际上各有不同的使用技巧，通过let，可以改变返回值，而通过also，可以将多个不同的原子操作通过链式进行组合，让逻辑更加明朗。</p>
+<h2>国际惯例</h2>
+<p></p>
+<h3>also &amp; apply</h3>
+<p>虽然also和apply都是返回this，但国际惯例，它们在使用的时候，还是有一些细微的差别的，also强调的是【与调用者无关的操作】，而apply强调的是【调用者的相关操作】，例如下面的这个例子。</p>
+<pre><code>test?.also {
+    println("some log")
+}?.apply {
+    name = "xys"
+}复制代码</code></pre>
+
+<p></p>
+<h3>let &amp; run</h3>
+<p>let和run的返回值相同，它们的区别主要在于作用域内使用it和this的区别。一般来说，如果调用者的属性和类中的属性同名，则一般会使用let，避免出现同名的赋值引起混乱。</p>
+<p>国际惯例，run通常使用在链式调用中，进行数据处理、类型转换，例如?.run{}的使用。</p>
+<p>欢迎关注我的微信公众号——Android群英传</p></div><br>作者：xuyisheng<br>链接：https://juejin.im/post/5d9e85ae51882509751b172a<br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div>

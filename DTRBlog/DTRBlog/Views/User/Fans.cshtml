@@ -1,0 +1,92 @@
+﻿@model PagedList<DTRBlog.Model.FollowListModel>
+@{
+    ViewBag.Title = "Fans";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+@section head{
+    <link href="~/Content/css/userstyle.css" rel="stylesheet" />
+}
+
+<div style="color:#716f6f;font-size:17px;margin:10px;">
+    我的粉丝
+</div>
+
+@if (Model.Count == 0)
+{
+    <div style="color:#808080;font-size:17px;width:156px;margin:190px auto;">
+        你还没有粉丝
+    </div>
+}
+<div class="my-list">
+    <ul class="list-unstyled">
+        @foreach (var item in Model)
+        {
+            <li class="item">
+                <div class="item-left">
+                    <a href="@Url.Action("home","article",new {BlogId=item.BlogID })">
+                        <img class="img"  style="width: 3.99rem;height: 3.99rem; border-radius: 50%" src="@item.HeadImg"/>
+
+                        <div class="nick-name">@item.NickName</div>
+                    </a>
+                </div>
+                <div class="item-right">
+                    @if (item.IsExistFollow)
+                    {
+                        <button class="btn btn-info follow" data-userid="@item.BlogID">@(item.IsBothFollow ? "相互关注" : "已关注")</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-default follow" data-userid="@item.BlogID">关注</button>
+                    }
+                </div>
+            </li>
+        }
+
+
+    </ul>
+</div>
+
+<div class="page-footer">
+    @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+</div>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+    $(".follow").on("click", function () {
+        var that = $(this);
+        var text = $(this).text();
+        var tBlogId = $(this).attr("data-userid");
+        if (text == "关注") {
+
+            $.ajax({
+                url: '@Url.Action("AddFollow","user")',
+                data: {
+                    targetBlogId: tBlogId
+                },
+                success: function (data) {
+                    if (data.code == 1) {
+                        that.removeClass("btn-default");
+                        that.addClass("btn-info");
+                        that.text(data.follow);
+                    }
+                }
+            });
+        } else {
+              $.ajax({
+                url: '@Url.Action("CancelFollow","user")',
+                data: {
+                    targetBlogId: tBlogId
+                },
+                success: function (data) {
+                    if (data.code == 1) {
+                        that.removeClass("btn-info");
+                        that.addClass("btn-default");
+                        that.text("关注");
+                    }
+                }
+            });
+
+        }
+    })
+</script>
+

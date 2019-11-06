@@ -1,0 +1,225 @@
+﻿@model DTR.DAL.BlogUser
+
+
+@{
+
+    Layout = null;
+
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>personInfo</title>
+    <style>
+        ul li {
+            text-decoration: none;
+            list-style-type: none;
+        }
+
+        ul li {
+            margin: 15px 0;
+            color: #2e2e2e;
+        }
+    </style>
+    <link href="~/Content/js/bootstrap.css" rel="stylesheet" />
+
+
+</head>
+<body>
+    <div style="border:1px solid #ff0000;height :700px;">
+
+        <div style="margin:0 40px;">
+
+            <div style="height:100px;line-height:100px;">
+                <div style="margin-top:-20px;">
+                    <h2>个人资料</h2>
+                </div>
+
+            </div>
+            @*线条*@
+            <div style="height:1px;background-color:gray;">
+
+            </div>
+            @*信息*@
+            <div style="height:600px;margin-top:20px;">
+                @*左边*@
+                <div style="width:100px;height:100px;float:left;">
+                    @*图片*@
+                    <div>
+                        <img src="~/Content/images/logo.png" class="img-circle" style="width:100px;height:100px;border-radius:5px;" />
+                    </div>
+                    @*文字*@
+                    <div>
+                        <a href="#">修改头像</a>
+                    </div>
+                </div>
+
+                @*右边*@
+                <div style="width:950px;height:550px;float:left;margin-left:20px;">
+                    <ul>
+                        <li style="color:#cecdcd">ID：kjednjhwnjkwk</li>
+                        <li>关注：@Model.CollectionCount &nbsp; &nbsp; &nbsp; &nbsp;粉丝：@Model.FollowCount</li>
+                    </ul>
+                    <div style="height:1px;background-color:gray;width:500px;">
+
+                    </div>
+                    <ul id="k">
+                        <li>
+                            <strong>昵称：</strong>
+                            @Model.Nikename
+                        </li>
+                        <li>
+                            <strong>性别：</strong>
+                            @{
+                                {
+
+                                    bool tempSex = Model.Sex ?? false;
+
+
+                                    if (tempSex)
+                                    {
+                                        <span>女</span>
+                                    }
+                                    else
+                                    {
+                                        <span>男</span>
+                                    }
+
+                                }
+                            }
+                        </li>
+                        <li>
+                            <strong>生日：</strong>
+                            @{
+                                if (Model.Birthday != null)
+                                {
+                                    <span>
+                                        @(((DateTime)Model.Birthday).ToString("yyyy年MM月dd日"))
+                                    </span>
+                                }
+
+                            }
+                        </li>
+                        <li>
+                            <span>地区：</span>
+                            @Model.Area
+                        </li>
+                        <li>
+                            <span>行业：</span>
+                            @Model.Industry
+                        </li>
+                        <li>
+                            <span>职位：</span>
+                            @Model.Position
+                        </li>
+                        <li>
+                            <span>个人简介：</span>
+                            @Model.BlogDese
+                        </li>
+                    </ul>
+                </div>
+                <a href="JavaScript:showChange();">修改个人资料</a>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <form action="/PersonBlog/ChangeInfo" method="post">
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">修改个人信息</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" hidden="hidden" name="BlogID" value="@(Model.BlogID)" />
+
+                        <div class="form-group">
+                            <label>昵称：</label>
+                            <input type="text" class="form-control" name="Nikename" readonly="readonly" value="@(Model.Nikename)" />
+                        </div>
+                        <div class="form-group">
+                            <label>性别：</label>
+                            @* Model.Sex != null && !(bool)Model.Sex *@
+
+                            @{
+                                {
+                                    bool tempSex = Model.Sex ?? false;
+
+
+                                    if (tempSex)
+                                    {
+
+                                        <select name="Sex" class="form-control">
+                                            <option value="0">男</option>
+                                            <option value="1" selected="selected">女</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select name="Sex" class="form-control">
+                                            <option value="0" selected="selected">男</option>
+                                            <option value="1">女</option>
+                                        </select>
+                                    }
+
+
+                                }
+
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label>生日：</label>
+                            @{
+
+                                <span>
+                                    <input type="date" name="Birthday" value=" @(((DateTime)Model.Birthday).ToString("yyyy-MM-dd"))" class="form-control" />
+                                    @*@((DateTime)Model.Birthday).ToString("yyyy年MM月dd日 HH:mm:ss")*@
+                                </span>
+
+
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label>地区：</label>
+                            <input type="text" class="form-control" name="Area" value="@(Model.Area)" />
+                        </div>
+                        <div class="form-group">
+                            <label>行业：</label>
+                            <input type="text" class="form-control" name="Industry" value="@(Model.Industry)" />
+                        </div>
+                        <div class="form-group">
+                            <label>职位：</label>
+                            <input type="text" class="form-control" name="Position" value="@(Model.Position)" />
+                        </div>
+                        <div class="form-group">
+                            <label>个人简介：</label>
+                            <input type="text" class="form-control" name="Desc" value="@(Model.BlogDese)" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">保存</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </form>
+
+    <script src="~/Content/js/jquery-3.3.1.min.js"></script>
+    <script src="~/Content/js/bootstrap.min.js"></script>
+    <script>
+        function showChange() {
+            $('#myModal').modal('show');
+        }
+    </script>
+</body>
+</html>

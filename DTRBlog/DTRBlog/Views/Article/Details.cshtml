@@ -1,0 +1,570 @@
+﻿@model DTRBlog.Model.ArticleDetail
+@{
+    ViewBag.Title = Model.BlogWorks.Title;
+
+    bool isSuppprted = ViewBag.isSupported == null ? false : ViewBag.isSupported;
+    bool isCollection = ViewBag.isCollection == null ? false : ViewBag.isCollection;
+}
+@section head{
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/css/Article.css" rel="stylesheet" />
+    <link href="~/Content/css/comment.css" rel="stylesheet" />
+    <link href="~/Content/css/style.css" rel="stylesheet" />
+    <link href="~/Content/css/tools.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+}
+@if (Model.BlogWorks.StateID == 3)
+{
+    <div class="side-tools">
+        <div class="praise">
+            <span id="praise"><img src="~/Content/images/@(isSuppprted ? "yizan.png" : "zan.png")" id="praise-img" /></span>
+            <span id="praise-txt" class="@(isSuppprted ? "hover" : " ")">@Model.SupportCount</span>
+            <span id="add-num"><em>+1</em></span>
+        </div>
+        <div class="like">
+            <span id="like"><img src="~/Content/images/@(isCollection ? "uncollection.png" : "collection.png")" id="like-img" /></span>
+            <span id="like-txt" class="@(isCollection ? "hover" : " ")">@Model.CollectionCount</span>
+        </div>
+        <div class="com">
+            <a href="#comments">
+                <span id="com">
+                    <img src="~/Content/images/comment.png" id="like-img" />
+                </span>
+            </a>
+            <span id="com">@Model.CommentCount</span>
+        </div>
+    </div>
+}
+<div class="container  pd-0">
+    @*侧边栏*@
+    <div class=" hidden-xs hidden-sm  col-md-4 pd-0 relative">
+        <div class="details-left bg-white">
+            @Html.Action("Author", new { BlogId = Model.BlogUser.BlogID, type = 0 })
+        </div>
+    </div>
+    @*文章内容*@
+    <div class="col-xs-12 col-sm-12 col-md-8 .pd-16 bg-white" style="min-height:242px">
+        @*标题begin*@
+        <article class="article-header pd-16  border-bt">
+            <h3> <strong>@Model.BlogWorks.Title</strong></h3>
+            <div class="article-Topinfo">
+                <span class="time mr-15">@Model.BlogWorks.PublishDate</span>
+                @Html.RouteLink(Model.BlogUser.Nikename, "blog", new { BlogId = Model.BlogUser.BlogID })
+                &nbsp;
+                <span class="read-count mr-15">阅读数 @Model.BlogWorks.BorwseCount.Value</span>
+            </div>
+        </article>
+        @*标题end*@
+        <article class="article-body">
+            @Html.Raw(Model.BlogWorks.WorksPath)
+        </article>
+        @*内容区结束*@
+        <br /><br />
+        @*<h5 style="padding:0 20px;color:#909090">
+                版权声明：本文为博主原创文章，转载请附上博文链接！
+
+            </h5> <br />*@
+        @*分享begin*@
+        @if (Model.BlogWorks.StateID == 3)
+        {
+            <script>
+                window._bd_share_config = {
+                    "common": {
+                        "bdSnsKey": {},
+                        "bdText": "",
+                        "bdMini": "2",
+                        "bdMiniList": false,
+                        "bdPic": "",
+                        "bdStyle": "0",
+                        "bdSize": "16"
+                    },
+                    "slide": {
+                        "type": "slide",
+                        "bdImg": "6",
+                        "bdPos": "left",
+                        "bdTop": "250"
+                    },
+                    "image": {
+                        "viewList": ["qzone", "tsina", "tqq", "renren", "weixin"],
+                        "viewText": "分享到：",
+                        "viewSize": "16"
+                    }
+                };
+                with (document) 0[(getElementsByTagName('head')[0] || body)
+                    .appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='
+                    + ~(-new Date() / 36e5)];
+
+                /**/</script>
+        }
+        @*分享end*@
+
+        @*评论begin*@
+        @if (Model.BlogWorks.StateID == 3)
+        {
+
+            <div id="comments" class="commentAll">
+                <!--评论区域 begin-->
+                <div class="reviewArea clearfix">
+                    <textarea class="content comment-input" placeholder="请输入你的评论&hellip;" onkeyup="keyUP(this)"></textarea>
+                    <a href="javascript:;" class="plBtn">评论</a>
+                </div>
+                <!--评论区域 end-->
+                <!--回复区域 begin-->
+                <div class="comment-show">
+                    @foreach (var item in Model.BlogComment)
+                    {
+                        <div class="comment-show-con clearfix">
+                            <div class="comment-show-con-img pull-left">
+                                @Html.Action("HeadImg", new { BlogId = item.CommentByUser })
+                            </div>
+                            <div class="comment-show-con-list pull-left clearfix">
+                                <div class="pl-text clearfix">
+                                    @Html.Action("NikeName", new { BlogId = item.CommentByUser })
+                                    <input type="hidden" value="@item.CommentByUser" class="comment-userid" />
+                                    <input type="hidden" value="@item.Comment.CommentID" class="comment-commentid" />
+                                    @*<a href="@Url.Action("index", new { BlogId = item.CommentByUser })" class="comment-size-name">@item.CommentByUser: </a>*@
+                                    <span class="my-pl-con">&nbsp; @item.Comment.CommentContent</span>
+                                </div>
+                                <div class="date-dz">
+                                    <span class="date-dz-left pull-left comment-time">@item.Comment.CommentDate</span>
+
+                                    <div class="date-dz-right pull-right comment-pl-block">
+
+                                        @if ((Session["BlogID"] != null && (Session["BlogID"].ToString() == item.CommentByUser)) || (Session["BlogID"] != null && Session["BlogID"].ToString() == Model.BlogUser.BlogID))
+                                        {
+                                            <a href="javascript:;" class="removeBlock">删除</a>
+                                        }
+                                        <a href="javascript:;" class="date-dz-pl pl-hf hf-con-block pull-left">回复</a>
+                                    </div>
+                                </div>
+                                @*回复*@
+                                <div class="hf-list-con" style="display:block;">
+                                    @Html.Action("ReplyCommentList", new { ParentCommentID = item.Comment.CommentID, authorId = Model.BlogUser.BlogID })
+                                </div>
+                                @*回复end*@
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!--回复区域 end-->
+            </div>
+        }
+
+
+        @*评论end*@
+    </div>
+</div>
+
+@*工具栏*@
+<div class="asid_share" id="asid_share">
+    <div class="asid_share_box relatives" style="display: none;">
+        <a href="#">
+            <img alt="返回顶部" title="" class="adid_icon" src="~/Content/images/top.png" />
+        </a>
+    </div>
+</div>
+
+
+<input type="hidden" value="@Model.BlogWorks.BlogWorksID" />
+<input type="hidden" value="@Session["BlogID"]" id="user" />
+<input type="hidden" value="@Session["NickName"]" id="nickName" />
+
+<script src="~/Content/js/jquery-1.7.2.min.js"></script>
+<script src="~/Content/js/jQuery.hhShare.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //图片滚动特效
+        $('#asid_share').hhShare({
+            cenBox: 'asid_share_box',  //里边的小层
+            icon: 'adid_icon',
+            addClass: 'red_bag',
+            titleClass: 'asid_title',
+            triangle: 'asid_share_triangle', //鼠标划过显示图层，边上的小三角
+            showBox: 'asid_sha_layer' //鼠标划过显示图层
+        });
+    });
+
+</script>
+<script src="~/Scripts/jquery.flexText.js"></script>
+<!--textarea高度自适应-->
+<script type="text/javascript">
+    $(function () {
+        $('.content').flexText();
+    });
+</script>
+<!--textarea限制字数-->
+<script type="text/javascript">
+    function keyUP(t) {
+        var len = $(t).val().length;
+        if (len > 139) {
+            $(t).val($(t).val().substring(0, 140));
+        }
+    }
+</script>
+<!--点击评论创建评论条-->
+<script type="text/javascript">
+    var CurrentUrl = "/Home/Login?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))";
+    var isLogin = true;
+    var currentUser = $("#user").val();
+    if (currentUser== "") {
+        isLogin = false;
+    }
+
+    $("#praise").click(function () {
+
+         if (!isLogin) {
+             if(confirm("点赞前请先登录,点击确定将跳转登录页面")){
+                    window.location.href =CurrentUrl;
+             }
+            return false;
+         }
+        var that = $(this);
+
+        var praise_img = $("#praise-img");
+        var text_box = $("#add-num");
+        var praise_txt = $("#praise-txt");
+        var num = parseInt(praise_txt.text());
+
+        if (praise_img.attr("src") == ("/Content/images/yizan.png")) {
+
+            $.ajax({
+                url: "@Url.Action("CancelGood","Article")",
+                type: "post",
+                data: {
+                    fromBlogId:currentUser,
+                    blogArticleId: "@Model.BlogWorks.BlogWorksID"
+                    },
+                success: function (data) {
+                    if (data.code == 1) {
+                        that.html("<img src='/Content/images/zan.png' id='praise-img' class='animation' />");
+                        praise_txt.removeClass("hover");
+                        text_box.show().html("<em class='add-animation'>-1</em>");
+                        $(".add-animation").removeClass("hover");
+                        num -= 1;
+                        praise_txt.text(num);
+                    }
+                }
+            })
+
+            } else {
+                $.ajax({
+                    url: "@Url.Action("AddGood","Article")",
+                    type: "post",
+                    data: {
+                        blogArticleId: @Model.BlogWorks.BlogWorksID,
+                        fromBlogId: currentUser,
+                        targetBlogUser: '@Model.BlogUser.BlogID'
+                    },
+                    success: function (data) {
+                        if (data.code == 1) {
+                            that.html("<img src='/Content/images/yizan.png' id='praise-img' class='animation' />");
+                            praise_txt.addClass("hover");
+                            text_box.show().html("<em class='add-animation'>+1</em>");
+                            $(".add-animation").addClass("hover");
+                            num += 1;
+                            praise_txt.text(num)
+                        }
+
+                    }
+                })
+
+            }
+        });
+
+    $("#like").click(function () {
+
+           if (!isLogin) {
+               if (confirm("点赞前请先登录,点击确定将跳转登录页面")) {
+                    window.location.href = CurrentUrl;
+               }
+               return false;
+           }
+        var that = $(this);
+
+
+        var praise_img = $("#like-img");
+        var praise_txt = $("#like-txt");
+        var num = parseInt(praise_txt.text());
+
+        if (praise_img.attr("src") == ("/Content/images/uncollection.png")) {
+               $.ajax({
+                   url: "@Url.Action("CancelCollection","Article")",
+                   type: "post",
+                   data: {
+                       fromBlogId: currentUser,
+                       blogArticleId: "@Model.BlogWorks.BlogWorksID"
+                   },
+                   success: function (data) {
+                       if (data.code == 1) {
+                          that.html("<img src='/Content/images/collection.png' id='like-img' class='animation' />");
+		                   praise_txt.removeClass("hover");
+		                   $(".add-animation").removeClass("hover");
+		                   num -= 1;
+                           praise_txt.text(num);
+                       }
+                   }
+               })
+        } else {
+                $.ajax({
+                url: "@Url.Action("AddCollection","Article")",
+                type: "post",
+                data: {
+                    blogArticleId: @Model.BlogWorks.BlogWorksID,
+                    fromBlogId: currentUser,
+                    targetBlogUser: '@Model.BlogUser.BlogID'
+                },
+                success: function (data) {
+                    if (data.code == 1) {
+		                that.html("<img src='/Content/images/uncollection.png' id='like-img' class='animation' />");
+		                praise_txt.addClass("hover");
+		                $(".add-animation").addClass("hover");
+		                num += 1;
+		                praise_txt.text(num)
+                    }
+
+
+                }
+                })
+		    }
+		});
+
+    $('.commentAll').on('click', '.plBtn', function () {
+        if (!isLogin) {
+             if(confirm("评论前请先登录,点击确定将跳转登录页面")){
+                    window.location.href = CurrentUrl;
+             }
+            return false;
+        }
+        var myDate = new Date();
+        //获取当前年
+        var year = myDate.getFullYear();
+        //获取当前月
+        var month = myDate.getMonth() + 1;
+        //获取当前日
+        var date = myDate.getDate();
+        var h = myDate.getHours();       //获取当前小时数(0-23)
+        var m = myDate.getMinutes();     //获取当前分钟数(0-59)
+        if (m < 10) m = '0' + m;
+        var s = myDate.getSeconds();
+        if (s < 10) s = '0' + s;
+        var now = year + '-' + month + "-" + date + " " + h + ':' + m + ":" + s;
+        //获取输入内容
+        var oSize = $(this).siblings('.flex-text-wrap').find('.comment-input').val();
+        console.log(oSize);
+        var that = $(this);
+
+        if (oSize.length <=0) {
+            alert("请输入内容");
+            return false
+        }
+        var nickName = $("#nickName").val();
+        $.ajax({
+            url:"@Url.Action("AddComment","Article")",
+            type: "post",
+            data: {
+                BlogId:currentUser,
+                BlogArticleId: @Model.BlogWorks.BlogWorksID,
+                Content: oSize,
+                AuthorArticleId:'@Model.BlogUser.BlogID'
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.code == 1) {
+                    //动态创建评论模块
+                    var oHtml = '<div class="comment-show-con clearfix"><div class="comment-show-con-img pull-left"><img src="@Html.Action("GetHeaderImg","Article",new { BlogId=Session["BlogID"]})" alt="" style="width: 50px; height: 50px; border-radius: 50%;"></div> <div class="comment-show-con-list pull-left clearfix"><div class="pl-text clearfix"> <a href="/@Session["BlogID"]" class="comment-size-name">' + nickName + ': </a> <input type="hidden" value="@Session["BlogID"]" class="comment-userid" /><input type="hidden" value="' + data.commentId + '" class="comment-commentid"/> <span class="my-pl-con">&nbsp;' + oSize + '</span> </div> <div class="date-dz"> <span class="date-dz-left pull-left comment-time">' + now + '</span> <div class="date-dz-right pull-right comment-pl-block"><a href="javascript:;" class="removeBlock">删除</a> <a href="javascript:;" class="date-dz-pl pl-hf hf-con-block pull-left">回复</a> </div> </div><div class="hf-list-con"></div></div> </div>';
+                    if (oSize.replace(/(^\s*)|(\s*$)/g, "") != '') {
+                        that.parents('.reviewArea ').siblings('.comment-show').prepend(oHtml);
+                        that.siblings('.flex-text-wrap').find('.comment-input').prop('value', '').siblings('pre').find('span').text('');
+                    }
+                }
+                else {
+                    alert("抱歉，评论失败！")
+                }
+            }
+        })
+    });
+</script>
+<!--点击回复动态创建回复块-->
+<script type="text/javascript">
+    $('.comment-show').on('click', '.pl-hf', function () {
+        //获取回复人的名字
+        var fhName = $(this).parents('.date-dz-right').parents('.date-dz').siblings('.pl-text').find('.comment-size-name').html();
+        //回复
+        var fhN = '回复@@' + fhName;
+        //var oInput = $(this).parents('.date-dz-right').parents('.date-dz').siblings('.hf-con');
+        var fhHtml = '<div class="hf-con pull-left"> <textarea class="content comment-input hf-input" placeholder="" onkeyup="keyUP(this)"></textarea> <a href="javascript:;" class="hf-pl">评论</a></div>';
+        //显示回复
+        if ($(this).is('.hf-con-block')) {
+            $(this).parents('.date-dz-right').parents('.date-dz').append(fhHtml);
+            $(this).removeClass('hf-con-block');
+            $('.content').flexText();
+            $(this).parents('.date-dz-right').siblings('.hf-con').find('.pre').css('padding', '6px 15px');
+            //console.log($(this).parents('.date-dz-right').siblings('.hf-con').find('.pre'))
+            //input框自动聚焦
+            $(this).parents('.date-dz-right').siblings('.hf-con').find('.hf-input').val('').focus().val(fhN);/*attr("placeholder", fhN)*/
+        } else {
+            $(this).addClass('hf-con-block');
+            $(this).parents('.date-dz-right').siblings('.hf-con').remove();
+        }
+    });
+</script>
+<!--评论回复块创建-->
+<script type="text/javascript">
+
+    var CurrentUrl = "/Home/Login?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))";
+    var isLogin = true;
+    var currentUser = $("#user").val();
+    if (currentUser== "") {
+        isLogin = false;
+    }
+
+    $('.comment-show').on('click', '.hf-pl', function () {
+         if (!isLogin) {
+             if(confirm("评论前请先登录,点击确定将跳转登录页面")){
+                    window.location.href = CurrentUrl;
+             }
+             return false;
+         }
+
+        var oThis = $(this);
+        var myDate = new Date();
+        //获取当前年
+        var year = myDate.getFullYear();
+        //获取当前月
+        var month = myDate.getMonth() + 1;
+        //获取当前日
+        var date = myDate.getDate();
+        var h = myDate.getHours();       //获取当前小时数(0-23)
+        var m = myDate.getMinutes();     //获取当前分钟数(0-59)
+        if (m < 10) m = '0' + m;
+        var s = myDate.getSeconds();
+        if (s < 10) s = '0' + s;
+        var now = year + '-' + month + "-" + date + " " + h + ':' + m + ":" + s;
+        //获取输入内容
+        var oHfVal = $(this).siblings('.flex-text-wrap').find('.hf-input').val();
+
+        //var index = oHfVal.indexOf(":");
+        //var strHf = oHfVal.substring(index + 1, oHfVal.length);
+
+        var replyId=$(this).parents('.hf-con').parents('.date-dz').siblings('.pl-text').find('.comment-commentid').val();
+        var userId=$(this).parents('.hf-con').parents('.date-dz').siblings('.pl-text').find('.comment-userid').val();/*被回复者ID*/
+        console.log(oHfVal);
+        console.log(replyId);
+
+
+        var oHfName = $(this).parents('.hf-con').parents('.date-dz').siblings('.pl-text').find('.comment-size-name').html();/*被回复者名字*/
+    
+        var oAllVal = '回复@@' + oHfName;
+        if (oHfVal.replace(/^ +| +$/g, '') == '' || oHfVal == oAllVal) {
+
+        } else {
+            $.getJSON("@Url.Action("JsonStr","Article")", function (data) {
+
+                console.log(data);
+                var oAt = '';
+                var oHf = '';
+                $.each(data, function (n, v) {
+                    console.log(n+"+"+v);
+                    delete v.hfContent;
+                    delete v.atName;
+                    var arr;
+                    var ohfNameArr;
+                    if (oHfVal.indexOf("@@") == -1) {
+                        data['atName'] = '';
+                        data['hfContent'] = oHfVal;
+                    } else {
+                        arr = oHfVal.split(':');
+                        ohfNameArr = arr[0].split('@@');
+                        data['hfContent'] = arr[1];
+                        data['atName'] = ohfNameArr[1];
+                    }
+
+                    if (data.atName == '') {
+                        oAt = data.hfContent;
+                    } else {
+                        oAt = data.hfContent; //'回复<a href="#" class="atName">@@' + data.atName + '</a>:' + data.hfContent;
+                    }
+                    oHf = data.hfName;
+                });
+                console.log(data.hfContent)
+                $.ajax({
+                    url: "@Url.Action("ReplyComment","Article")",
+                    type: "post",
+                    data: {
+                        ArticleId:@Model.BlogWorks.BlogWorksID,
+                        BlogId:currentUser,
+                        ReplyId:replyId ,
+                        ReplyContent: data.hfContent,
+                        AuthorArticleId:userId
+                    },
+                    success: function (data) {
+
+                        if (data.code == 1) {
+                            alert("回复成功")
+
+                            //var oHtml = '<div class="all-pl-con"><div class="pl-text hfpl-text clearfix"><a href="#" class="comment-size-name">我: </a><input type="hidden" value="@Session["BlogID"]" class="comment-userid" /> <input type="hidden" value="' + data.commentId + '" class="comment-commentid"/><span class="my-pl-con">' + oAt + '</span></div><div class="date-dz"> <span class="date-dz-left pull-left comment-time">' + now + '</span> <div class="date-dz-right pull-right comment-pl-block"> <a href="javascript:;" class="removeBlock">删除</a> <a href="javascript:;" class="date-dz-pl pl-hf hf-con-block pull-left">回复</a> </div> </div></div>';
+
+                            var oHtml = '<div class="all-pl-con"><div class="pl-text hfpl-text clearfix"><a href="/@Session["BlogID"]" class="comment-size-name">@Session["NickName"]</a><input type="hidden" value="@Session["BlogID"]" class="comment-userid" /> <input type="hidden" value="' + data.commentId + '" class="comment-commentid"/><span class="my-pl-con">' + oAt + '</span></div><div class="date-dz"> <span class="date-dz-left pull-left comment-time">' + now + '</span> <div class="date-dz-right pull-right comment-pl-block"> <a href="javascript:;" class="removeBlock">删除</a> </div> </div></div>';
+
+                            oThis.parents('.hf-con').parents('.comment-show-con-list').find('.hf-list-con').css('display', 'block').prepend(oHtml) && oThis.parents('.hf-con').siblings('.date-dz-right').find('.pl-hf').addClass('hf-con-block') && oThis.parents('.hf-con').remove();
+
+                        }
+                    }
+                })
+             });
+        }
+    });
+
+
+    setTimeout(function () {
+                   @if (Model.BlogWorks.StateID == 3)
+                   {
+                       int? Count = Model.BlogWorks.BorwseCount;
+                       int worksID = Model.BlogWorks.BlogWorksID;
+                       string ajax = "$.ajax({ url:'/Article/Browse/"+Count+"?blogId="+worksID+"'}); ";
+                       @Html.Raw(ajax);
+                   }
+    },10*1000)
+
+
+</script>
+<!--删除评论块-->
+<script type="text/javascript">
+    $('.commentAll').on('click', '.removeBlock', function () {
+
+
+        var comId = $(this).parents('.date-dz-right').parents('.date-dz').siblings(".pl-text").find(".comment-commentid").val();
+        console.log(comId);
+
+        var that = $(this);
+
+        $.ajax({
+            url: "@Url.Action("RemoveComment","Article")",
+            type: "post",
+            data: {
+                commentId: comId
+            },
+            success: function (data) {
+                console.log(data);
+                if (data.code == 1) {
+                    var oT = that.parents('.date-dz-right').parents('.date-dz').parents('.all-pl-con');
+                    if (oT.siblings('.all-pl-con').length >= 1) {
+                        oT.remove();
+                    } else {
+                        that.parents('.date-dz-right').parents('.date-dz').parents('.all-pl-con').parents('.hf-list-con').css('display', 'none')
+                        oT.remove();
+                    }
+                    that.parents('.date-dz-right').parents('.date-dz').parents('.comment-show-con-list').parents('.comment-show-con').remove();
+
+                } else {
+
+                    alert(data.message);
+                }
+
+            }
+        })
+    })
+</script>
+
+

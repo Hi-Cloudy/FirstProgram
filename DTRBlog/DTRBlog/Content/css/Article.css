@@ -1,0 +1,282 @@
+
+/*文章列表*/
+
+.bg-white {
+    background-color: #fff;
+}
+
+.bd-left {
+    border-left: 1px solid #f0f0f0;
+}
+
+.pd-16 {
+    padding: 16px;
+}
+
+.pd-0 {
+    padding: 0px;
+}
+
+.relative {
+    position: relative;
+}
+
+.details-left {
+    padding: 9px;
+    border-right: 1px solid #f0f0f0;
+}
+
+.mt-r2 {
+    margin-right: 2px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.article-Topinfo {
+    margin-top:15px;
+    margin-bottom:0px;
+    color: gray;
+}
+
+.article-header {
+    padding-bottom: 15px;
+}
+
+.article-body {
+    font-size: 16px;
+    padding:10px;
+}
+.article-body img{
+   width:100%;
+}
+
+.border-bt {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.blogs {
+    position: relative;
+    padding: 17px 7px;
+    margin-top: 0px;
+    border-bottom: #f0f0f0 1px solid;
+    overflow: hidden;
+}
+
+    .blogs figure {
+        position: absolute;
+        /*top: 50px;*/
+        height: auto;
+        float: left;
+        max-width: 160px;
+        overflow: hidden;
+    }
+
+        .blogs figure img {
+            width: 160px;
+            height: auto;
+            -moz-transition: all 0.5s;
+            -webkit-transition: all 0.5s;
+            -o-transition: all 0.5s;
+            transition: all 0.5s;
+        }
+
+    .blogs ul {
+        float: right;
+        line-height: 22px;
+        width: 72%;
+        color: #756F71;
+        margin-bottom:-19px;
+    }
+
+    .blogs p.disss {
+       min-height: 30px;
+       max-height:70px;
+       padding-left:7px;
+        text-overflow: ellipsis;
+    }
+
+    .blogs h3 {
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.5s;
+        margin-bottom: 10px;
+    }
+
+        .blogs h3 a {
+            color: #474645;
+        }
+
+            .blogs h3 a:hover {
+                color: #337ab7;
+                text-decoration: underline
+            }
+
+    .blogs:nth-last-child(1) {
+        border-bottom: none;
+    }
+
+    .blogs .blog-context {
+        color: #756F71;
+        padding: 7px;
+        margin-left: 5px;
+    }
+
+    .autor {
+        overflow: hidden;
+        clear: both;
+        margin: 10px 0;
+        display: inline-block;
+        color: #838383;
+        width: 100%;
+        margin-left:-13px;
+    }
+
+    .autor span {
+        margin: 0 10px 0 0;
+        padding-left: 20px;
+    }
+
+.lm {
+    background: url(../images/newsbg01.png) no-repeat left center
+}
+
+.dtime {
+    background: url(../images/newsbg02.png) no-repeat left center
+}
+
+.viewnum {
+    background: url(../images/newsbg04.png) no-repeat left center
+}
+
+.pingl {
+    background: url(../images/newsbg03.png) no-repeat left center
+}
+
+.autor span a {
+    color: #759b08;
+}
+
+    .autor span a:hover {
+        text-decoration: underline
+    }
+
+
+
+@media screen and (max-width: 650px) {
+    .blogs li .disss, .blogs .blog-context {
+        display: none;
+    }
+
+    .blogs li .autor {
+        margin-top: 35px;
+    }
+
+    .blogs {
+        height: auto;
+        width: 549px;
+    }
+
+        .blogs figure img {
+            display: block;
+            width: 130px;
+            height: 87px;
+            padding-bottom: 3px;
+        }
+}
+
+@media screen and (max-width: 991px) {
+    .blogs li .disss {
+        min-width: 58px;
+        /*height:65px;
+        overflow: hidden;*/
+    }
+}
+
+
+/*用户资料*/
+.aside-box .my-header div.topleft {
+    float: left;
+    margin: 2%;
+    padding: 20px 0px;
+}
+.gg {
+    display: flex;
+}
+
+.gg dl {
+    float: left;
+    margin: 5%;
+    padding: 20px 9px;
+}
+
+.aside-box .my-header {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    .aside-box .my-header div img.pic {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+.my-header .topright {
+    width: 100px;
+    float: right;
+    margin-top: 30px;
+    margin-left: 10px;
+}
+
+    .my-header .topright span#attention {
+        display: block;
+        width: 57px;
+        color: #337ab7;
+        cursor: pointer;
+        text-align: center;
+        height: 33px;
+        line-height: 33px;
+        border: 1px solid #337ab7;
+        background-color: white;
+        border-radius: 6px;
+    }
+
+        .my-header .topright span#attention:hover {
+            background-color: #f0f0f0;
+        }
+.attention {
+    background-color: #f0f0f0;
+}
+
+.blog-top {
+    color: #337ab7 !important;
+}
+/*工具栏*/
+.tool-box {
+    position: absolute;
+    right: 10px;
+    top: 130px;
+    z-index: 100
+}
+
+    .tool-box li span {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-size: 14px;
+        display: block;
+        padding: 8px 16px;
+        border: 1px solid #fff;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: center;
+        background-color: white;
+        color: #337ab7;
+        cursor: pointer;
+    }
+
+        .tool-box li span:hover {
+            background-color: #f0f0f0;
+        }
+.min-h-710 {
+    padding-top:25px;
+    min-height:710px;
+}
+

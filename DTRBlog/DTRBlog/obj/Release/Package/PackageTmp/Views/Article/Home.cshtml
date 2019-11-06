@@ -1,0 +1,44 @@
+﻿@model Webdiyer.WebControls.Mvc.PagedList < DTRBlog.Model.ArticleList >
+@section head{
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/css/base.css" rel="stylesheet" />
+    <link href="~/Content/css/index.css" rel="stylesheet" />
+    <link href="~/Content/css/userpage.css" rel="stylesheet" />
+    <style>
+        span.info {
+            margin-right: 10px;
+            padding-right: 10px;
+            font-size: 1.3rem;
+        }
+
+        .mr-3 {
+            margin-right: 30px;
+        }
+
+        .btn-primariy {
+            color: #fff;
+            background-color: #696a6e;
+            border-color: #ebeef1;
+        }
+
+            .btn-primariy:hover {
+                background-color: #9a9b9e;
+                border-color: #9a9b9e;
+            }
+    </style>
+}
+<div style="height:30px;"></div>
+<section class="aui-flexView">
+    <section class="aui-scrollView">
+        @Html.Action("Author", new { BlogId = ViewBag.blogId})
+        <div class="divHeight"></div>
+        <div class="aui-flex aui-flex-one b-line">
+            <div class="container">
+                @Html.Partial("_Article", Model)
+
+            </div>
+        </div>
+        <div style="height:55px;"></div>
+    </section>
+</section>
+

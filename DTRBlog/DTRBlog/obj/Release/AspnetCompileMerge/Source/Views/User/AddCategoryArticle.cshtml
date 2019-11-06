@@ -1,0 +1,72 @@
+﻿@model PagedList<DTRBlog.Model.BlogWorks>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>addCate</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/layui/css/layui.css" rel="stylesheet" />
+    <script src="~/Content/layui/layui.js"></script>
+</head>
+<body>
+
+
+
+    <div class="container">
+
+        <ul class="list-unstyled a-list" style="padding:17px;">
+            @foreach (var item in Model)
+            {
+                <li class="page-header">
+                    <input class="singleSelect" value="@item.BlogWorksID" name="" type="checkbox">
+                    @Html.RouteLink(item.Title, new { BlogId = Session["BlogID"], id = item.BlogWorksID }, new { target = "_blank" })
+                </li>
+            }
+        </ul>
+        <div class="row">
+            <button class="btn btn-info " onclick="AddToCategory()" style="float:right;margin-right:20%">添加</button>
+        </div>
+    </div>
+    <div>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageIndex", ContainerTagName = "ul", CssClass = "pagination", CurrentPagerItemTemplate = "<li class=\"active\"><a href=\"#\">{0}</a></li>", DisabledPagerItemTemplate = "<li class=\"disabled\"><a>{0}</a></li>", PagerItemTemplate = "<li>{0}</li>", Id = "bootstrappager" })
+
+    </div>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script>
+        function AddToCategory() {
+            var idBulder = '';
+            $(".singleSelect").each(function () {
+                if ($(this)[0].checked) {
+                    idBulder += $(this).val() + ',';
+                }
+            }); console.log(idBulder)
+
+            if (!idBulder) {
+                alert('请至少勾选一个！');
+                return false;
+            }
+            $.ajax({
+                url: '@Url.Action("AddArticleToCate","user")',
+                data: {
+                    cateId:@ViewBag.categoryId,
+                    strBulder:idBulder
+                },
+                success: function (data) {
+                    if (data.code == 1) {
+                        window.parent.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        parent.layer.msg(data.message);
+
+                    } else {
+                        layer.msg(data.message);
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>

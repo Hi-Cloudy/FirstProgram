@@ -1,0 +1,33 @@
+.my-list > ul li.item {
+    border-bottom: 1px solid rgba(230,230,231,.5);
+    color: #808080;
+    align-items: center;
+    padding: .5rem 2.4rem;
+    min-height: 5.03rem;
+    position:relative;
+}
+    .my-list > ul li.item div{
+        padding:3px;
+    }
+    .my-list > ul li.item .a-intr {
+        word-wrap: break-word;
+        min-height: 0;
+        max-height: 60px;
+        overflow: hidden;
+    }
+.cancel-collection {
+    float:right;
+    cursor:pointer;
+}
+.a-title {
+    display: inline-block;
+    max-width: 50%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.collection-time {
+    float: right;
+    margin-top: 0px ;
+    align-items: center;
+}

@@ -1,0 +1,134 @@
+﻿@model DTRBlog.Model.BlogUser
+<aside>
+    <div id="asideProfile" class="aside-box">
+        <div class="my-header clearfix">
+            <div class="topleft">
+                <a href="@Url.Action("home", new { BlogId = Model.BlogID })">
+                    <img src="@Model.UserPath" class="pic" />
+                </a>
+            </div>
+            <div class="topleft">
+                <p class="text-capitalize">
+                    <a href="@Url.Action("home", new { BlogId = Model.BlogID })">
+                        <b>@Model.Nikename</b>
+                    </a>
+                </p>
+                <p style="color:#808080;padding:2px;">人气：@Model.BorwseCount</p>
+            </div>
+            <div class="topright">
+                @{
+
+                    string id = Session["BlogID"] == null ? "" : Session["BlogID"].ToString();
+                }
+                @if (Model.BlogID != id)
+                {
+                    if (ViewBag.ExistFlolow)
+                    {
+                        <span id="attention" class="attention">@(ViewBag.IsBothFollor ? "已互关" : "已关注")</span>
+                    }
+                    else
+                    {
+
+                        <span id="attention" class="attention ">关注</span>
+                    }
+                }
+                else
+                {
+
+                    <a href="@Url.Action("pb","perb",null )" style="display:inline-block;padding:7px;text-decoration:none;border:1px solid #469cb0;font-size:12px;border-radius:7px;">个人中心</a>
+                }
+            </div>
+        </div>
+
+        <div class="gg clearfix">
+            <dl class="text-center" title="@Model.WorksCount">
+                <dt>
+                    @Html.RouteLink("作品", "blog", new { BlogId = Model.BlogID, })
+                </dt>
+                <dd><span class="a-count">@Model.WorksCount</span></dd>
+            </dl>
+            <dl class="text-center" id="fanBox" title="@Model.FansCount">
+                <dt><a href="/article/Get/Fans?blogId=@Model.BlogID">粉丝</a></dt>
+                <dd><span class="a-count" id="fan">@Model.FansCount</span></dd>
+            </dl>
+            <dl class="text-center" title="@Model.FollowCount">
+                <dt> <a href="/article/Get/Follow?blogId=@Model.BlogID">关注</a></dt>
+                <dd><span class="a-count" id="like">@Model.FollowCount</span></dd>
+            </dl>
+            <dl class="text-center" title="@Model.CollectionCount">
+                <dt><a href="/article/GetCollection?blogId=@Model.BlogID">收藏文章</a></dt>
+                <dd><span class="a-count">@Model.CollectionCount</span></dd>
+            </dl>
+        </div>
+    </div>
+</aside>
+<input type="hidden" value="@Session["BlogID"]" id="user"  />
+<script type="text/javascript">
+    var CurrentUrl = "/Home/Login?currentUrl=@Convert.ToBase64String(System.Text.Encoding.Default.GetBytes(Request.Url.PathAndQuery))";
+
+    var isLogin = true;
+    var currentUser = $("#user").val();
+    if (currentUser== "") {
+        isLogin = false;
+    }
+    $('#attention').click(function () {
+        
+        if (!isLogin) {
+                if (confirm("关注前请先登录,点击确定将跳转登录页面")) {
+                    window.location.href = CurrentUrl;
+                }
+                return false;
+        }
+        var text = $(this).text();
+        if (text == "关注") {
+              $.ajax({
+                url: "/Article/AddFollow",
+                type: "post",
+                data: {
+                    BlogId:currentUser,
+                    TargetBlogId:'@Model.BlogID'
+                  },
+                success: function (data) {
+                    console.log(data.message + data.code);
+                    if (data.code == 1) {
+                        $('#attention').text(data.follow);
+                        $.ajax({
+                            url: "/Article/FanCount?blogId=" +@Model.BlogID,
+                            type: "get",
+                            success: function (data) {
+                                $("#fan").text(data)
+                            }
+                        });
+                        return;
+                    }
+                    alert("发生异常，请稍后再试！")
+                }
+              });
+        }
+        else {
+              $.ajax({
+                url: "/Article/CancelFollow",
+                type: "post",
+                data: {
+                    BlogId:currentUser,
+                    TargetBlogId:'@Model.BlogID'
+                },
+                success: function (data) {
+                    console.log(data.message + data.code);
+                    if (data.code == 1) {
+                        $('#attention').text("关注");
+                        $.ajax({
+                            url: "/Article/FanCount?blogId=" +@Model.BlogID,
+                            type: "get",
+                            success: function (data) {
+                                $("#fan").text(data)
+                            }
+                        });
+                        return;
+                    }
+                   alert("发生异常，请稍后再试！")
+                }
+            });
+        }
+    })
+</script>
